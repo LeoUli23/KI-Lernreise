@@ -100,6 +100,17 @@ h2{font-size:22px;margin:.2em 0 .5em}
 .keys li{margin:.25em 0}
 .sticky-foot{position:sticky;bottom:0;padding:14px 0 calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
 .card .sticky-foot{background:linear-gradient(color-mix(in srgb,var(--card) 0%,transparent),var(--card) 30%);margin:0 -2px}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0}
+.flow span{background:var(--card);border:2px solid color-mix(in srgb,var(--zc) 40%,var(--line));border-radius:10px;padding:6px 10px;font-weight:700;font-size:14px;line-height:1.3}
+.flow span small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.flow i{font-style:normal;color:var(--zc);font-weight:900}
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.matrix div{border-radius:12px;padding:12px;font-size:14px;line-height:1.35}
+.matrix b{display:block;font-size:15px;margin-bottom:2px}
+.matrix .q1{background:var(--good-bg);border:2px solid var(--good)}
+.matrix .q2{background:color-mix(in srgb,var(--gold) 14%,var(--card));border:2px solid var(--gold)}
+.matrix .q3{background:color-mix(in srgb,var(--zc) 9%,var(--card));border:2px solid var(--line)}
+.matrix .q4{background:var(--bad-bg);border:2px solid var(--bad)}
 /* Questions */
 .qtype{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--zc)}
 .qtext{font-size:20px;margin:6px 0 16px}
@@ -517,36 +528,130 @@ nav .cnt{position:absolute;top:4px;left:calc(50% + 8px);background:var(--bad);co
       title: "KI-Strategie: Process Map und 5 Phasen",
       icon: "🗺️",
       lesson: `
-<h4>Process Map</h4>
-<p>Eine <b>Process Map</b> (Prozesslandkarte) zeigt alle wichtigen Abläufe einer Organisation auf einen Blick: Wer macht was, in welcher Reihenfolge, mit welchen Tools? Erst wenn du einen Prozess sichtbar machst, erkennst du, wo KI helfen kann.</p>
-<div class="ex">Beispiel „Konzert organisieren“: Anfrage → Termin prüfen → Angebot → Vertrag → Besetzung → Probenplan → Noten → Reise → Abrechnung.</div>
-<h4>Engpasskonzentriertes Arbeiten</h4>
-<p>Eine Kette ist nur so stark wie ihr schwächstes Glied. Statt überall ein bisschen zu verbessern, suchst du den <b>Engpass</b>: den Schritt, der am meisten bremst. Dort setzt du zuerst an.</p>
-<h4>KI-Strategie in 5 Phasen</h4>
+<p>Viele Organisationen starten mit KI so: Jemand hat ein Video gesehen, kauft ein Tool, probiert ein bisschen herum, und nach drei Wochen nutzt es keiner mehr. Eine <b>KI-Strategie</b> verhindert genau das. Sie beantwortet drei Fragen:</p>
 <ol>
-<li><b>Analyse:</b> Prozesse erfassen, Zeitfresser und Engpässe finden.</li>
-<li><b>Priorisierung:</b> Nach Nutzen und Aufwand ordnen. Zuerst die „Quick Wins“ mit großem Nutzen und wenig Aufwand.</li>
-<li><b>Pilot:</b> Einen Anwendungsfall klein testen und messen.</li>
-<li><b>Umsetzung:</b> Das, was funktioniert, sauber einführen, dokumentieren und schulen.</li>
-<li><b>Skalierung und Optimierung:</b> Auf weitere Bereiche übertragen, laufend messen und verbessern.</li>
+<li><b>Wo</b> lohnt sich KI bei uns wirklich?</li>
+<li><b>In welcher Reihenfolge</b> gehen wir vor?</li>
+<li><b>Woran</b> merken wir, dass es funktioniert?</li>
 </ol>
-<div class="tip">Ein <b>Lastenheft</b> beschreibt, <b>was</b> eine Lösung leisten soll, aus Sicht des Auftraggebers. Es ist die Basis für jeden Bot, jeden Agenten und jede Automation.</div>`,
+<p>Das Werkzeug für Frage 1 ist die <b>Process Map</b>, für Frage 2 die <b>Engpass-Suche</b> und die <b>Priorisierung</b>, und der rote Faden für alles zusammen sind die <b>5 Phasen</b>.</p>
+
+<h4>Teil 1: Die Process Map, also Abläufe sichtbar machen</h4>
+<p>Ein <b>Prozess</b> ist ein Ablauf, der sich wiederholt und immer ungefähr gleich läuft: eine Anfrage beantworten, eine Rechnung schreiben, ein Konzert organisieren. Die meisten Prozesse existieren nur <b>im Kopf</b> der Leute, die sie machen. Und was man nicht sieht, kann man nicht verbessern.</p>
+<p>Eine <b>Process Map</b> (Prozesslandkarte) zeichnet einen Ablauf Schritt für Schritt auf. Man kann sie sich wie eine <b>Partitur für Arbeitsabläufe</b> vorstellen: Wer spielt wann was, und wo gibt es Pausen?</p>
+<p><b>Zu jedem Schritt notierst du fünf Dinge:</b></p>
+<ul>
+<li><b>Was</b> passiert? (kurz, mit Verb: „Angebot schreiben“)</li>
+<li><b>Wer</b> macht es?</li>
+<li><b>Womit</b>? (Mail, Excel, Papier, Telefon …)</li>
+<li><b>Wie lange</b> dauert es, und wie oft kommt es vor?</li>
+<li><b>Was nervt</b>? Wo gibt es Wartezeiten, Fehler, Rückfragen, doppelte Arbeit?</li>
+</ul>
+<div class="ex"><b>Process Map „Konzertanfrage bis Auftritt“</b> (für ein Ensemble, ca. 4 Anfragen im Monat):
+<div class="flow"><span>📩 Anfrage kommt<small>Mail · 5 Min</small></span><i>→</i><span>📅 Termin prüfen<small>Kalender + 5 Musiker fragen · 2–3 Tage Wartezeit</small></span><i>→</i><span>💶 Angebot<small>Word-Vorlage · 45 Min</small></span><i>→</i><span>✍️ Vertrag<small>PDF hin und her · 30 Min</small></span><i>→</i><span>👥 Besetzung<small>WhatsApp · 1 Std</small></span><i>→</i><span>🎼 Noten + Probenplan<small>1,5 Std</small></span><i>→</i><span>🚐 Reise<small>1 Std</small></span><i>→</i><span>🧾 Abrechnung<small>Excel · 1 Std</small></span></div>
+Notizen am Rand: „Verfügbarkeit abfragen dauert ewig“, „Angebot wird jedes Mal neu geschrieben“, „Abrechnung oft vergessen“.</div>
+<p><b>So erstellst du eine Process Map in vier Schritten:</b></p>
+<ol>
+<li><b>Prozess wählen:</b> Einen konkreten Ablauf mit klarem Start und Ende („von Anfrage bis Auftritt“), nicht „unsere Organisation“.</li>
+<li><b>Mit den Beteiligten sprechen:</b> Die Person, die es täglich macht, kennt die echten Schritte. Oft sieht der Prozess in der Praxis ganz anders aus als gedacht.</li>
+<li><b>Aufzeichnen:</b> Haftnotizen an der Wand, ein Whiteboard oder einfach eine Liste mit Pfeilen. Schönheit ist egal.</li>
+<li><b>Messen und markieren:</b> Zeit und Häufigkeit eintragen, Schmerzpunkte rot markieren.</li>
+</ol>
+<div class="tip">Rechne pro Schritt: <b>Dauer × Häufigkeit = Zeit pro Monat</b>. 45 Minuten Angebot × 4 Anfragen = 3 Stunden im Monat. So siehst du schwarz auf weiß, wo die Zeit hingeht.</div>
+
+<h4>Teil 2: Den Engpass finden</h4>
+<p>Stell dir eine Röhre vor, durch die Wasser fließt. Wie viel Wasser durchkommt, bestimmt die <b>engste Stelle</b>, nicht die breiteste. Bei Prozessen ist es genauso: Der langsamste Schritt bestimmt das Tempo des ganzen Ablaufs. Diese Stelle heißt <b>Engpass</b>.</p>
+<p><b>Engpasskonzentriertes Arbeiten</b> heißt: Du verbesserst zuerst genau diese Stelle. Ein schnellerer Schritt <i>vor</i> dem Engpass bringt nichts, weil sich die Arbeit dann nur vor dem Engpass staut.</p>
+<div class="ex">Im Konzert-Beispiel ist der Engpass „Termin prüfen“: 2–3 Tage Warten auf Antworten der Musiker. Wenn du das Angebot dank KI in 5 statt 45 Minuten schreibst, wartet der Veranstalter trotzdem 3 Tage. Erst wenn die Verfügbarkeit schneller geklärt ist, z. B. durch einen gemeinsamen Verfügbarkeitskalender, den jeder selbst pflegt, wird der <b>ganze</b> Ablauf schneller.</div>
+<p><b>Woran du einen Engpass erkennst:</b></p>
+<ul>
+<li>Davor stapelt sich Arbeit („Ich warte noch auf …“).</li>
+<li>Eine bestimmte Person ist ständig überlastet, und ohne sie geht nichts.</li>
+<li>Hier passieren die meisten Fehler oder Rückfragen.</li>
+<li>Kunden oder Kollegen beschweren sich genau über diesen Punkt.</li>
+</ul>
+<div class="tip">Ist der Engpass gelöst, wandert er weiter zum nächsten Schritt. Das ist normal. Darum ist eine KI-Strategie kein einmaliges Projekt, sondern ein Kreislauf.</div>
+
+<h4>Teil 3: Priorisieren mit der Nutzen-Aufwand-Matrix</h4>
+<p>Nach der Process Map hast du meist eine lange Liste an Ideen. Damit du nicht alles gleichzeitig anfängst, sortierst du jede Idee nach zwei Fragen: <b>Wie groß ist der Nutzen?</b> und <b>Wie groß ist der Aufwand?</b></p>
+<div class="matrix">
+<div class="q1"><b>⭐ Quick Wins</b>großer Nutzen, wenig Aufwand<br><i>→ sofort machen</i></div>
+<div class="q2"><b>🏔️ Große Projekte</b>großer Nutzen, viel Aufwand<br><i>→ gut planen, später</i></div>
+<div class="q3"><b>🧹 Kleinkram</b>kleiner Nutzen, wenig Aufwand<br><i>→ nebenbei, wenn Zeit ist</i></div>
+<div class="q4"><b>🚫 Zeitfresser</b>kleiner Nutzen, viel Aufwand<br><i>→ lassen</i></div>
+</div>
+<div class="ex">Angebote mit einer KI-Vorlage erstellen → <b>Quick Win</b>. Ein eigener Voice Agent für Buchungen → <b>großes Projekt</b>. Eine KI, die Konzertfotos automatisch umbenennt → <b>Kleinkram</b>. Eine eigene KI-Plattform programmieren lassen → <b>Zeitfresser</b>.</div>
+
+<h4>Teil 4: Die 5 Phasen der KI-Strategie</h4>
+<p>Die 5 Phasen bringen alles in eine sinnvolle Reihenfolge. Zu jeder Phase: Ziel, Leitfragen, Ergebnis und typische Stolperfallen.</p>
+
+<p><b>Phase 1: Analyse</b><br>
+<i>Ziel:</i> Verstehen, wie wir heute arbeiten.<br>
+<i>Leitfragen:</i> Welche Prozesse haben wir? Wo geht Zeit verloren? Wo ist der Engpass? Welche Daten und Tools gibt es schon?<br>
+<i>Ergebnis:</i> Process Maps der wichtigsten Abläufe und eine Liste mit Ideen.<br>
+<i>Stolperfalle:</i> Zu lange analysieren. Zwei oder drei Kernprozesse reichen für den Anfang.</p>
+
+<p><b>Phase 2: Priorisierung</b><br>
+<i>Ziel:</i> Entscheiden, womit wir anfangen.<br>
+<i>Leitfragen:</i> Welche Idee hat den größten Nutzen bei vertretbarem Aufwand? Was löst den Engpass? Gibt es rechtliche Hürden (Datenschutz)?<br>
+<i>Ergebnis:</i> Nutzen-Aufwand-Matrix und <b>ein</b> ausgewählter Anwendungsfall für den Pilot.<br>
+<i>Stolperfalle:</i> Mit dem spannendsten statt mit dem sinnvollsten Projekt anfangen.</p>
+
+<p><b>Phase 3: Pilot</b><br>
+<i>Ziel:</i> Im Kleinen beweisen, dass es funktioniert.<br>
+<i>Leitfragen:</i> Was genau soll die Lösung leisten (Lastenheft)? Woran messen wir Erfolg? Wer testet mit?<br>
+<i>Ergebnis:</i> Eine funktionierende Testlösung mit wenigen Nutzern, einem festen Zeitraum (z. B. 4 Wochen) und Messwerten vorher und nachher.<br>
+<i>Stolperfalle:</i> Keine Messgröße festlegen. Dann weiß am Ende niemand, ob es besser geworden ist.</p>
+
+<p><b>Phase 4: Umsetzung</b><br>
+<i>Ziel:</i> Das Bewährte zum festen Bestandteil machen.<br>
+<i>Leitfragen:</i> Wer ist verantwortlich? Wie schulen wir alle? Wie dokumentieren wir den neuen Ablauf? Was passiert, wenn die KI einen Fehler macht?<br>
+<i>Ergebnis:</i> Eingeführte Lösung, kurze Anleitung, geschulte Nutzer, klare Zuständigkeit.<br>
+<i>Stolperfalle:</i> Die Menschen vergessen. Eine Lösung, die keiner versteht oder der keiner vertraut, wird nicht genutzt.</p>
+
+<p><b>Phase 5: Skalierung und Optimierung</b><br>
+<i>Ziel:</i> Mehr Nutzen aus dem Gelernten ziehen.<br>
+<i>Leitfragen:</i> Lässt sich die Lösung auf andere Bereiche übertragen? Wo ist der neue Engpass? Was sagen die Messwerte nach drei Monaten?<br>
+<i>Ergebnis:</i> Weitere Anwendungsfälle und regelmäßige Überprüfung, z. B. einmal im Quartal.<br>
+<i>Stolperfalle:</i> Aufhören, nachzumessen. Tools ändern sich schnell, und was heute gut ist, kann in einem Jahr überholt sein.</p>
+
+<div class="tip">Phase 5 führt zurück zu Phase 1: Mit dem neuen Engpass beginnt die nächste Runde. Die 5 Phasen sind also ein <b>Kreislauf</b>, keine Einbahnstraße.</div>
+
+<h4>Teil 5: Lastenheft und Pflichtenheft</h4>
+<p>Spätestens im Pilot brauchst du ein <b>Lastenheft</b>. Es beschreibt aus Sicht des Auftraggebers, <b>was</b> die Lösung leisten soll: Zweck, Nutzer, Eingaben, Ergebnisse, Grenzen und Erfolgskriterien. Das <b>Pflichtenheft</b> schreibt danach der Umsetzer. Es beschreibt, <b>wie</b> er das umsetzt: welche Tools, welche Schritte, welche Technik.</p>
+<div class="ex">Lastenheft (Auszug): „Bei jeder Konzertanfrage soll innerhalb von 24 Stunden ein Angebot als PDF vorliegen. Grundlage sind unsere Preisliste und der Verfügbarkeitskalender. Vor dem Versand gibt der Leiter frei. Erfolg: Antwortzeit unter 24 Stunden in 90 % der Fälle.“<br>Pflichtenheft (Auszug): „Formular in Jotform → n8n liest Daten → Abgleich mit Google Kalender → Claude erstellt Angebotstext → PDF aus Vorlage → Freigabe-Mail an den Leiter.“</div>
+
+<h4>Alles zusammen: das Beispiel im Durchlauf</h4>
+<ol>
+<li><b>Analyse:</b> Process Map „Anfrage bis Auftritt“ zeichnen. Engpass: Verfügbarkeit klären (3 Tage). Zeitfresser: Angebote (3 Std./Monat) und Abrechnung.</li>
+<li><b>Priorisierung:</b> Quick Win: Angebote mit KI-Vorlage. Engpass-Lösung: gemeinsamer Verfügbarkeitskalender. Großes Projekt für später: automatisierter Ablauf von der Anfrage bis zum Angebot.</li>
+<li><b>Pilot:</b> 4 Wochen lang Verfügbarkeitskalender plus KI-Angebotsvorlage. Messung vorher: 3 Tage bis zum Angebot. Nachher: 1 Tag.</li>
+<li><b>Umsetzung:</b> Alle Musiker tragen sich ein, eine Anleitung auf einer Seite, der Leiter ist zuständig.</li>
+<li><b>Skalierung:</b> Der neue Engpass ist die Abrechnung. Gleiches Vorgehen: Vorlage + KI, die Belege ausliest. Später: der automatisierte Gesamtablauf.</li>
+</ol>`,
       keys: [
-        "Process Map macht Abläufe sichtbar",
-        "Zuerst den Engpass verbessern",
-        "5 Phasen: Analyse → Priorisierung → Pilot → Umsetzung → Skalierung",
-        "Lastenheft = Was soll die Lösung können?"
+        "Process Map = Ablauf mit Was, Wer, Womit, Dauer, Schmerzpunkt",
+        "Dauer × Häufigkeit zeigt, wo die Zeit hingeht",
+        "Engpass = langsamster Schritt; ihn zuerst verbessern",
+        "Nutzen-Aufwand-Matrix: Quick Wins zuerst, Zeitfresser lassen",
+        "5 Phasen: Analyse → Priorisierung → Pilot → Umsetzung → Skalierung, als Kreislauf",
+        "Lastenheft = Was (Auftraggeber), Pflichtenheft = Wie (Umsetzer)"
       ],
       quiz: [
-        { t: "order", q: "Bringe die 5 Phasen der KI-Strategie in die richtige Reihenfolge.", o: ["Analyse", "Priorisierung", "Pilot", "Umsetzung", "Skalierung und Optimierung"], e: "Erst verstehen, dann klein testen, dann ausrollen." },
-        { t: "mc", q: "Was ist ein „Quick Win“?", o: ["Großer Nutzen bei wenig Aufwand", "Ein teures Großprojekt", "Ein Gewinnspiel", "Ein besonders schnelles Modell"], a: 0, e: "Quick Wins schaffen früh Vertrauen und Budget." },
-        { t: "mc", q: "Wo setzt engpasskonzentriertes Arbeiten an?", o: ["Beim schönsten Prozess", "Beim Schritt, der am meisten bremst", "Überall gleichzeitig", "Beim billigsten Tool"], a: 1, e: "Das schwächste Glied bestimmt die Kette." },
-        { t: "tf", q: "Ein Lastenheft beschreibt, was eine Lösung leisten soll.", a: true, e: "Das Wie kommt später, z. B. im Pflichtenheft des Umsetzers." }
+        { t: "mc", q: "Was gehört NICHT zu den Angaben pro Schritt einer Process Map?", o: ["Wer macht den Schritt?", "Wie lange dauert er, und wie oft kommt er vor?", "Welches Logo hat die Firma?", "Was nervt an diesem Schritt?"], a: 2, e: "Pro Schritt zählen: Was, Wer, Womit, Dauer/Häufigkeit und Schmerzpunkte." },
+        { t: "mc", q: "Ein Schritt dauert 30 Minuten und kommt 12-mal im Monat vor. Wie viel Zeit kostet er pro Monat?", o: ["30 Minuten", "3 Stunden", "6 Stunden", "12 Stunden"], a: 2, e: "30 Min × 12 = 360 Min = 6 Stunden." },
+        { t: "mc", q: "Im Prozess wartet man 3 Tage auf die Verfügbarkeit der Musiker. Das Angebot schreiben dauert 45 Minuten. Was verbesserst du zuerst, um den ganzen Ablauf schneller zu machen?", o: ["Das Angebot schreiben", "Die Verfügbarkeitsklärung, denn sie ist der Engpass", "Die Abrechnung", "Das Logo im Angebot"], a: 1, e: "Ein schnelleres Angebot hilft wenig, solange man vorher 3 Tage wartet. Der Engpass bestimmt das Tempo." },
+        { t: "match", q: "Ordne die Idee dem Feld der Nutzen-Aufwand-Matrix zu.", p: [["Großer Nutzen, wenig Aufwand", "Quick Win: sofort machen"], ["Großer Nutzen, viel Aufwand", "Großes Projekt: gut planen"], ["Kleiner Nutzen, wenig Aufwand", "Kleinkram: nebenbei"], ["Kleiner Nutzen, viel Aufwand", "Zeitfresser: lassen"]], e: "So entscheidest du, womit du anfängst." },
+        { t: "order", q: "Bringe die 5 Phasen der KI-Strategie in die richtige Reihenfolge.", o: ["Analyse", "Priorisierung", "Pilot", "Umsetzung", "Skalierung und Optimierung"], e: "Erst verstehen, dann auswählen, klein testen, einführen und ausbauen." },
+        { t: "match", q: "Ordne das Ergebnis der Phase zu.", p: [["Process Maps und Ideenliste", "Analyse"], ["Ein ausgewählter Anwendungsfall", "Priorisierung"], ["Testlösung mit Messwerten vorher und nachher", "Pilot"], ["Anleitung, Schulung, klare Zuständigkeit", "Umsetzung"]], e: "Jede Phase hat ein greifbares Ergebnis." },
+        { t: "tf", q: "Ein Pilot ohne vorher festgelegte Messgröße ist kein Problem, man merkt ja, ob es besser ist.", a: false, e: "Ohne Messgröße bleibt es Bauchgefühl. Lege vorher fest, was du misst, z. B. Zeit bis zum Angebot." },
+        { t: "match", q: "Lastenheft oder Pflichtenheft?", p: [["Beschreibt, WAS die Lösung leisten soll", "Lastenheft"], ["Beschreibt, WIE es technisch umgesetzt wird", "Pflichtenheft"], ["Wird vom Umsetzer geschrieben", "Pflichtenheft (Umsetzer)"], ["Wird vom Auftraggeber geschrieben", "Lastenheft (Auftraggeber)"]], e: "Erst das Was, dann das Wie." },
+        { t: "tf", q: "Nach Phase 5 beginnt der Kreislauf mit dem neuen Engpass wieder bei Phase 1.", a: true, e: "Ist ein Engpass gelöst, wandert er weiter. Die Strategie ist ein Kreislauf." }
       ],
       practice: {
-        task: "Zeichne gedanklich eine Mini-Process-Map für einen deiner Abläufe (5–8 Schritte) und markiere den Engpass.",
-        hint: "Schreibe die Schritte mit Pfeilen hintereinander. Wo wartest du am längsten?",
-        solution: "Beispiel Bewerbung: Stelle finden → Unterlagen anpassen → Anschreiben → Aufnahmen auswählen → Hochladen → Nachfassen. Engpass: Anschreiben, jedes Mal 2 Stunden. Dort hilft KI am meisten."
+        task: "Erstelle eine Mini-KI-Strategie für einen echten Ablauf aus deinem Alltag: 1) Process Map mit 5–8 Schritten inkl. Dauer und Häufigkeit, 2) Engpass markieren, 3) drei Ideen in die Nutzen-Aufwand-Matrix einordnen, 4) einen Pilot mit Messgröße festlegen.",
+        hint: "Wähle etwas, das sich mindestens monatlich wiederholt, z. B. Probenorganisation, Vereinsbeiträge, Bewerbungen oder Unterrichtsplanung. Rechne pro Schritt Dauer × Häufigkeit.",
+        solution: "Beispiel „Probenorganisation im Verein“ (2 Proben pro Monat):\n1) Process Map: Termin festlegen (20 Min) → Raum anfragen (15 Min + 2 Tage Warten) → Mitglieder informieren (30 Min) → Zusagen einsammeln (1 Std, ständiges Nachfragen) → Noten verteilen (30 Min) → Anwesenheit nachtragen (15 Min).\n2) Engpass: Zusagen einsammeln. Es fehlen immer Antworten, die Planung hängt.\n3) Matrix: Online-Umfrage mit automatischer Erinnerung → Quick Win. KI-Assistent, der Infomails schreibt → Kleinkram. Eigene Vereins-App → großes Projekt, später.\n4) Pilot: 4 Wochen Umfrage-Tool mit Erinnerung nach 48 Std. Messgröße: Anteil der Antworten bis 3 Tage vor der Probe (vorher ca. 60 %, Ziel 90 %)."
       }
     }
   ]
