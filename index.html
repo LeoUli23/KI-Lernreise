@@ -1,0 +1,2709 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KI-Lernreise: vom KI-Manager zu Claude Code</title>
+<meta name="description" content="Interaktive Lern-App mit Gamification: KI-Grundlagen, Prompt Engineering, Automation, Voice Agents und Claude Code.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<style>
+:root{
+  --bg:#f7f5f0; --card:#ffffff; --ink:#1f2328; --muted:#6b7280; --line:#e7e3da;
+  --accent:#6d28d9; --accent-2:#8b5cf6; --good:#16a34a; --good-bg:#e8f7ee; --bad:#dc2626; --bad-bg:#fdecec;
+  --gold:#f59e0b; --shadow:0 2px 0 rgba(0,0,0,.06), 0 8px 24px rgba(31,35,40,.06);
+  --r:16px; --zc:#6d28d9;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14151a; --card:#1d1f26; --ink:#eceef2; --muted:#9aa1ad; --line:#2c2f39;
+    --good-bg:#12301f; --bad-bg:#3a1717; --shadow:0 2px 0 rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+.hidden{display:none!important}
+/* Top bar */
+#top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topin{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:17px;white-space:nowrap}
+.rankbox{flex:1;min-width:0}
+.rankname{font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.rankname span:last-child{color:var(--muted);font-weight:600}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.pill{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:15px;white-space:nowrap}
+.pill.streak.off{filter:grayscale(1);opacity:.55}
+/* Layout */
+main{max-width:760px;margin:0 auto;padding:18px 16px 120px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.25}
+h1{font-size:28px;margin:.2em 0 .4em}
+h2{font-size:22px;margin:.2em 0 .5em}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:13px 20px;font-weight:800;background:var(--accent);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 65%,#000);transition:transform .08s, box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 65%,#000)}
+.btn.zone{background:var(--zc);box-shadow:0 4px 0 color-mix(in srgb,var(--zc) 65%,#000)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn.good{background:var(--good);box-shadow:0 4px 0 #0f6b30}
+.btn.bad{background:var(--bad);box-shadow:0 4px 0 #8f1717}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn.wide{width:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Hero */
+.hero{display:flex;gap:16px;align-items:center;margin-bottom:22px}
+.hero .big{font-size:46px;line-height:1}
+.hero h1{margin:0;font-size:24px}
+.overall{margin-top:8px}
+/* Map */
+.zone{margin:30px 0 12px}
+.zhead{display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:var(--r);color:#fff;background:var(--zc);box-shadow:0 4px 0 color-mix(in srgb,var(--zc) 60%,#000)}
+.zhead .zi{font-size:34px}
+.zhead h2{margin:0;font-size:19px;color:#fff}
+.zhead p{margin:2px 0 0;font-size:13.5px;opacity:.92}
+.zhead .zprog{margin-left:auto;text-align:right;font-weight:800;font-size:14px;white-space:nowrap}
+.zone.locked .zhead{background:#9ca3af;box-shadow:0 4px 0 #6b7280}
+.path{display:flex;flex-direction:column;align-items:center;padding:18px 0 6px}
+.node{position:relative;display:flex;flex-direction:column;align-items:center;margin:8px 0;width:160px}
+.nbtn{width:74px;height:70px;border-radius:50%;border:0;font-size:30px;display:grid;place-items:center;background:var(--zc);color:#fff;box-shadow:0 6px 0 color-mix(in srgb,var(--zc) 60%,#000);transition:transform .1s}
+.nbtn:active{transform:translateY(4px);box-shadow:0 2px 0 color-mix(in srgb,var(--zc) 60%,#000)}
+.node.locked .nbtn{background:var(--line);color:var(--muted);box-shadow:0 6px 0 color-mix(in srgb,var(--line) 70%,#000);cursor:not-allowed;font-size:24px}
+.node.next .nbtn{animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 6px 0 color-mix(in srgb,var(--zc) 60%,#000),0 0 0 0 color-mix(in srgb,var(--zc) 55%,transparent)}70%{box-shadow:0 6px 0 color-mix(in srgb,var(--zc) 60%,#000),0 0 0 16px transparent}100%{box-shadow:0 6px 0 color-mix(in srgb,var(--zc) 60%,#000),0 0 0 0 transparent}}
+.node.done .nbtn::after{content:"✓";position:absolute;top:-4px;right:38px;background:var(--gold);color:#fff;width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:900;display:grid;place-items:center;border:2px solid var(--bg)}
+.nlabel{font-size:13px;font-weight:700;text-align:center;margin-top:9px;line-height:1.25}
+.node.locked .nlabel{color:var(--muted)}
+.stars{font-size:13px;letter-spacing:1px;height:16px}
+.start-tag{position:absolute;top:-30px;background:var(--card);border:2px solid var(--zc);color:var(--zc);font-weight:900;font-size:12px;padding:3px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:.05em;animation:bob 1.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.bossnode .nbtn{width:92px;height:88px;font-size:44px;background:#111827;box-shadow:0 6px 0 #000}
+/* Level */
+.lvlhead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.xbtn{border:0;background:transparent;font-size:24px;color:var(--muted);padding:4px 8px}
+.steps{flex:1;display:flex;gap:6px}
+.steps i{flex:1;height:8px;border-radius:99px;background:var(--line)}
+.steps i.on{background:var(--zc)}
+.hearts{font-size:20px;white-space:nowrap}
+.hearts .lost{filter:grayscale(1);opacity:.3}
+.lesson h4{margin:1.3em 0 .4em;font-size:17px}
+.lesson p{margin:.6em 0}
+.lesson ul,.lesson ol{padding-left:1.3em}
+.lesson li{margin:.3em 0}
+.lesson code,.lesson pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:color-mix(in srgb,var(--zc) 10%,var(--card));border-radius:6px}
+.lesson code{padding:1px 6px}
+.lesson pre{padding:12px 14px;overflow:auto;white-space:pre-wrap;border:1px solid var(--line)}
+.tip,.ex{border-radius:12px;padding:12px 14px;margin:14px 0;font-size:15px}
+.tip{background:color-mix(in srgb,var(--gold) 14%,var(--card));border-left:5px solid var(--gold)}
+.tip::before{content:"💡 ";}
+.ex{background:color-mix(in srgb,var(--zc) 9%,var(--card));border-left:5px solid var(--zc)}
+.ex::before{content:"🎼 Beispiel: ";font-weight:800}
+.keys{margin-top:18px;border:2px dashed color-mix(in srgb,var(--zc) 50%,var(--line));border-radius:14px;padding:12px 16px}
+.keys b{display:block;margin-bottom:4px}
+.keys li{margin:.25em 0}
+.sticky-foot{position:sticky;bottom:0;padding:14px 0 calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.card .sticky-foot{background:linear-gradient(color-mix(in srgb,var(--card) 0%,transparent),var(--card) 30%);margin:0 -2px}
+/* Questions */
+.qtype{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--zc)}
+.qtext{font-size:20px;margin:6px 0 16px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:600;transition:border-color .12s,background .12s}
+.opt:hover{border-color:color-mix(in srgb,var(--zc) 55%,var(--line))}
+.opt.sel{border-color:var(--zc);background:color-mix(in srgb,var(--zc) 10%,var(--card))}
+.opt.right{border-color:var(--good);background:var(--good-bg)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.tf{grid-template-columns:1fr 1fr}
+.tf .opt{text-align:center;font-size:18px;padding:18px}
+.pool,.answer{display:flex;flex-direction:column;gap:8px;min-height:52px}
+.answer{border:2px dashed var(--line);border-radius:14px;padding:8px;margin-bottom:14px;counter-reset:ord}
+.answer .chip{counter-increment:ord}
+.answer .chip::before{content:counter(ord) ". ";font-weight:900;color:var(--zc)}
+.answer:empty::before{content:"Tippe die Einträge unten in der richtigen Reihenfolge an";color:var(--muted);font-size:14px;padding:6px}
+.chip{padding:11px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:600;text-align:left}
+.chip.right{border-color:var(--good);background:var(--good-bg)}
+.chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-bottom:10px}
+.mrow .ml{font-weight:700;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--zc) 9%,var(--card))}
+select{font:inherit;width:100%;padding:11px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+select.right{border-color:var(--good);background:var(--good-bg)}
+select.wrong{border-color:var(--bad);background:var(--bad-bg)}
+@media (max-width:520px){.mrow{grid-template-columns:1fr;gap:6px;margin-bottom:16px}}
+.feedback{margin-top:16px;border-radius:14px;padding:14px 16px}
+.feedback.ok{background:var(--good-bg);border:2px solid var(--good)}
+.feedback.no{background:var(--bad-bg);border:2px solid var(--bad)}
+.feedback h4{margin:0 0 4px;font-size:18px}
+.feedback .sol{font-weight:700;margin:6px 0}
+.feedback p{margin:4px 0 12px}
+/* Practice */
+textarea{width:100%;min-height:130px;font:inherit;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);resize:vertical}
+.solution{white-space:pre-wrap;background:color-mix(in srgb,var(--good) 10%,var(--card));border-left:5px solid var(--good);border-radius:12px;padding:12px 14px;margin:12px 0}
+.hint{background:color-mix(in srgb,var(--gold) 12%,var(--card));border-radius:12px;padding:10px 14px;margin:10px 0;font-size:15px}
+/* Result */
+.result{text-align:center}
+.result .big{font-size:64px;line-height:1.1}
+.bigstars{font-size:40px;letter-spacing:6px;margin:8px 0}
+.xplist{max-width:340px;margin:14px auto;text-align:left}
+.xplist div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.xplist div:last-child{border:0;font-weight:900}
+/* Stats & badges */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+.stat b{display:block;font-size:26px}
+.badge{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center}
+.badge .bi{font-size:38px}
+.badge b{display:block;font-size:14px;margin-top:4px}
+.badge small{color:var(--muted);font-size:12px;line-height:1.3;display:block;margin-top:2px}
+.badge.locked .bi{filter:grayscale(1);opacity:.3}
+.badge.locked b{color:var(--muted)}
+.ranks{list-style:none;padding:0;margin:0}
+.ranks li{display:flex;gap:12px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line)}
+.ranks li.cur{font-weight:900;color:var(--accent)}
+.ranks li.future{color:var(--muted)}
+.ranks .ri{font-size:24px;width:32px;text-align:center}
+.ranks small{margin-left:auto;color:var(--muted)}
+.section{margin-top:26px}
+.toggle{display:flex;gap:12px;align-items:flex-start;padding:10px 0}
+.toggle input{width:22px;height:22px;margin-top:2px}
+/* Nav */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.navin{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav button{border:0;background:transparent;padding:9px 4px 10px;font-size:12px;font-weight:700;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+nav button span{font-size:22px}
+nav button.on{color:var(--accent)}
+nav .cnt{position:absolute;top:4px;left:calc(50% + 8px);background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:0 6px;line-height:18px}
+/* Toast & modal */
+#toasts{position:fixed;top:70px;left:0;right:0;z-index:50;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{background:#111827;color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:tin .35s ease-out, tout .4s ease-in 2.6s forwards}
+@keyframes tin{from{transform:translateY(-14px);opacity:0}}
+@keyframes tout{to{transform:translateY(-14px);opacity:0}}
+#modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.45);display:grid;place-items:center;padding:20px}
+#modal .card{max-width:420px;width:100%;text-align:center;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.8);opacity:0}}
+#modal .big{font-size:72px;line-height:1.1}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+/* Certificate */
+.cert{position:relative;background:#fffdf7;color:#2b2414;border:10px double #b08d3c;border-radius:8px;padding:38px 28px;text-align:center;font-family:Georgia,"Times New Roman",serif}
+.cert h1{font-size:36px;margin:.1em 0;color:#7a5c12;letter-spacing:.02em}
+.cert .who{font-size:30px;font-style:italic;margin:14px 0;border-bottom:1px solid #b08d3c;display:inline-block;padding:0 24px 4px;min-width:60%}
+.cert .seal{font-size:54px}
+.cert ul{display:inline-block;text-align:left;margin:10px auto;font-size:15px}
+.cert .foot{display:flex;justify-content:space-between;margin-top:26px;font-size:14px;gap:12px;flex-wrap:wrap}
+.cert small{display:block;margin-top:18px;color:#7b6c4a;font-size:12px}
+@media print{
+  body *{visibility:hidden}
+  #certprint, #certprint *{visibility:visible}
+  #certprint{position:absolute;left:0;top:0;width:100%}
+  nav,#top{display:none}
+}
+</style>
+</head>
+<body>
+<header id="top"></header>
+<main id="app"></main>
+<nav id="nav"></nav>
+<div id="toasts"></div>
+<canvas id="confetti"></canvas>
+<script>
+(window.ZONES = window.ZONES || []).push({
+  id: "z0",
+  title: "Start",
+  subtitle: "Deine Lernreise beginnt",
+  icon: "🚀",
+  color: "#0ea5e9",
+  badge: { name: "Losgelaufen", icon: "👟" },
+  levels: [
+    {
+      id: "z0l1",
+      title: "Willkommen an Bord",
+      icon: "👋",
+      lesson: `
+<p>Schön, dass du da bist! Diese App führt dich in <b>8 Zonen</b> von null bis zu <b>Claude Code</b>. Sie folgt dem Aufbau der Kurse <i>KI-Manager</i> und <i>Claude Code Masterclass</i> von kilernen.de, erklärt aber alles in eigenen Worten und mit eigenen Übungen.</p>
+<h4>So läuft jedes Level ab</h4>
+<ol>
+<li><b>Lernen:</b> Du liest eine kurze Lerneinheit. Fachbegriffe werden immer erklärt.</li>
+<li><b>Quiz:</b> 3 bis 5 Fragen. Du hast <b>3 Herzen ❤️</b>. Jede falsche Antwort kostet ein Herz.</li>
+<li><b>Praxis:</b> Eine kleine Aufgabe zum Selbermachen. Danach vergleichst du mit der Musterlösung.</li>
+</ol>
+<h4>Was du sammelst</h4>
+<ul>
+<li><b>XP</b> für jede richtige Antwort, jedes Level und jede Praxisaufgabe</li>
+<li><b>Ränge</b> vom <i>KI-Neuling</i> bis zum <i>Agent-Meister</i></li>
+<li><b>Streak 🔥</b>: Lerne an aufeinanderfolgenden Tagen</li>
+<li><b>Badges</b> für jede abgeschlossene Zone und besondere Leistungen</li>
+</ul>
+<div class="tip">Falsch beantwortete Fragen landen automatisch im <b>Wiederholungs-Modus</b>. So festigst du genau das, was noch wackelt.</div>
+<p>Am Ende wartet der <b>Endboss</b>: eine Abschlussprüfung über alle Zonen. Bestehst du sie, bekommst du deine Urkunde.</p>`,
+      keys: [
+        "Jedes Level: Lernen → Quiz → Praxis",
+        "3 Herzen pro Quiz-Versuch",
+        "Fehler landen im Wiederholungs-Modus",
+        "Endboss-Prüfung am Schluss"
+      ],
+      quiz: [
+        { t: "order", q: "Bringe die Schritte eines Levels in die richtige Reihenfolge.", o: ["Lerneinheit lesen", "Quiz beantworten", "Praxisaufgabe lösen"], e: "Erst verstehen, dann prüfen, dann anwenden." },
+        { t: "mc", q: "Was passiert mit Fragen, die du falsch beantwortest?", o: ["Sie verschwinden", "Sie landen im Wiederholungs-Modus", "Du verlierst alle XP", "Das Level wird gesperrt"], a: 1, e: "Im Wiederholungs-Modus übst du gezielt deine Schwachstellen." },
+        { t: "tf", q: "Wenn du an mehreren Tagen hintereinander lernst, wächst deine Streak.", a: true, e: "Die Streak 🔥 zählt aufeinanderfolgende Lerntage." }
+      ],
+      practice: {
+        task: "Schreibe in 1–2 Sätzen auf, was du mit KI in deinem Alltag oder Beruf erreichen willst.",
+        hint: "Denk an wiederkehrende Aufgaben, die dich Zeit kosten: E-Mails, Planung, Recherche, Organisation.",
+        solution: "Beispiel: „Ich möchte KI nutzen, um Probenpläne, E-Mails an Veranstalter und Vereinsorganisation schneller zu erledigen, und mit Claude Code eigene kleine Tools bauen.“ Ein klares Ziel hilft dir, das Gelernte immer gleich auf deine Situation zu übertragen."
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z1",
+  title: "KI-Fundament",
+  subtitle: "Was KI ist und wie man sie strategisch einsetzt",
+  icon: "🧠",
+  color: "#8b5cf6",
+  badge: { name: "Fundament gelegt", icon: "🏛️" },
+  levels: [
+    {
+      id: "z1l1",
+      title: "Was ist KI? Eine kurze Geschichte",
+      icon: "📜",
+      lesson: `
+<p><b>Künstliche Intelligenz (KI)</b> bezeichnet Computersysteme, die Aufgaben lösen, für die man bisher menschliche Intelligenz brauchte: Sprache verstehen, Bilder erkennen, Entscheidungen vorbereiten, Texte schreiben.</p>
+<h4>Meilensteine</h4>
+<ul>
+<li><b>1950:</b> Alan Turing fragt, ob Maschinen denken können, und schlägt den „Turing-Test“ vor.</li>
+<li><b>1956:</b> Auf der Dartmouth-Konferenz wird der Begriff „Artificial Intelligence“ geprägt.</li>
+<li><b>1970er/80er:</b> „KI-Winter“: Die großen Versprechen werden nicht eingelöst, Geld und Interesse brechen ein.</li>
+<li><b>1997:</b> Der Schachcomputer Deep Blue schlägt Weltmeister Kasparow.</li>
+<li><b>2012:</b> Durchbruch des <b>Deep Learning</b> bei der Bilderkennung, möglich durch viel Daten und starke Grafikkarten.</li>
+<li><b>2017:</b> Die <b>Transformer</b>-Architektur wird vorgestellt. Sie ist die Basis heutiger Sprachmodelle.</li>
+<li><b>2022:</b> ChatGPT macht generative KI für alle zugänglich. Danach folgen Claude, Gemini und viele andere.</li>
+</ul>
+<h4>Die vierte industrielle Revolution</h4>
+<p>Man spricht oft von vier industriellen Revolutionen: <b>Dampfmaschine</b> → <b>Elektrizität und Fließband</b> → <b>Computer und Automatisierung</b> → <b>Vernetzung und KI</b>. Neu ist diesmal: Automatisiert wird nicht nur Handarbeit, sondern auch <b>Wissensarbeit</b>.</p>
+<div class="ex">Vergleich aus der Musik: Früher hat ein Notenstecher Partituren von Hand gesetzt, dann kam Notensatz-Software. KI geht einen Schritt weiter: Sie kann z. B. aus einer Beschreibung einen Probenplan entwerfen.</div>`,
+      keys: [
+        "KI = Systeme, die „intelligente“ Aufgaben lösen",
+        "1956 Begriff geprägt, 2012 Deep Learning, 2017 Transformer, 2022 ChatGPT",
+        "4. industrielle Revolution: Automatisierung von Wissensarbeit"
+      ],
+      quiz: [
+        { t: "order", q: "Ordne die Ereignisse zeitlich (früh → spät).", o: ["Dartmouth-Konferenz prägt den Begriff KI", "Deep Blue schlägt Kasparow", "Transformer-Architektur wird vorgestellt", "ChatGPT erscheint"], e: "1956 → 1997 → 2017 → 2022." },
+        { t: "mc", q: "Was war der „KI-Winter“?", o: ["Eine Phase mit wenig Geld und Interesse für KI", "Ein KI-Modell von Google", "Eine Wetter-KI", "Der Name des ersten Chatbots"], a: 0, e: "Nach überzogenen Erwartungen brachen Förderung und Interesse zeitweise ein." },
+        { t: "mc", q: "Welche Architektur ist die Grundlage heutiger Sprachmodelle wie Claude?", o: ["Dampfmaschine", "Transformer", "Excel-Makros", "Lochkarten"], a: 1, e: "Der Transformer (2017) ist das Fundament moderner LLMs." },
+        { t: "tf", q: "Das Besondere an der KI-Revolution ist, dass auch Wissensarbeit automatisiert werden kann.", a: true, e: "Frühere Revolutionen ersetzten vor allem körperliche oder einfache Routinearbeit." }
+      ],
+      practice: {
+        task: "Nenne drei Aufgaben aus deinem Alltag, die zur Wissensarbeit gehören und die KI unterstützen könnte.",
+        hint: "Wissensarbeit = Denken, Schreiben, Planen, Recherchieren, Organisieren.",
+        solution: "Beispiele: 1) Bewerbungsanschreiben vorformulieren, 2) Probenplan aus Terminen erstellen, 3) lange PDFs (z. B. Vertragsbedingungen) zusammenfassen."
+      }
+    },
+    {
+      id: "z1l2",
+      title: "Die Rolle des KI-Managers",
+      icon: "🧭",
+      lesson: `
+<p>Ein <b>KI-Manager</b> ist die Brücke zwischen Technik und Alltag eines Unternehmens oder Vereins. Er muss nicht programmieren können. Er muss aber verstehen, <b>was KI kann</b>, <b>wo sie hilft</b> und <b>wie man sie sicher einführt</b>.</p>
+<h4>Typische Verantwortungsbereiche</h4>
+<ol>
+<li><b>Potenziale erkennen:</b> Wo kostet uns etwas viel Zeit? Wo passieren Fehler?</li>
+<li><b>Strategie entwickeln:</b> Was machen wir zuerst, was später?</li>
+<li><b>Tools auswählen:</b> Welche Software passt zu uns und unserem Budget?</li>
+<li><b>Prozesse automatisieren:</b> Abläufe so bauen, dass sie ohne Handarbeit laufen.</li>
+<li><b>Recht und Sicherheit:</b> Datenschutz, EU AI Act, Zugangsdaten.</li>
+<li><b>Menschen befähigen:</b> Kolleginnen schulen, Ängste nehmen, Regeln aufstellen.</li>
+</ol>
+<div class="tip">Merke: Ein KI-Manager denkt in <b>Prozessen und Ergebnissen</b>, nicht in Tools. Das Tool ist nur das Werkzeug.</div>
+<div class="ex">Beispiel Verein: Statt „Wir brauchen ChatGPT“ fragt der KI-Manager: „Die Mitgliederverwaltung kostet uns 5 Stunden pro Woche. Welcher Teil davon lässt sich automatisieren?“</div>`,
+      keys: [
+        "Brücke zwischen Technik und Praxis",
+        "Denkt in Prozessen, nicht in Tools",
+        "Verantwortlich auch für Recht, Sicherheit und Schulung"
+      ],
+      quiz: [
+        { t: "tf", q: "Ein KI-Manager muss zwingend programmieren können.", a: false, e: "Er muss KI verstehen und einordnen können. Programmieren hilft, ist aber keine Pflicht." },
+        { t: "mc", q: "Welche Frage stellt ein guter KI-Manager zuerst?", o: ["Welches Tool ist gerade angesagt?", "Wo verlieren wir Zeit oder machen Fehler?", "Wie teuer ist das größte Abo?", "Welche KI hat das beste Logo?"], a: 1, e: "Erst das Problem, dann das Werkzeug." },
+        { t: "match", q: "Ordne die Aufgabe dem Bereich zu.", p: [["Mitarbeitende schulen", "Menschen befähigen"], ["DSGVO prüfen", "Recht und Sicherheit"], ["Zeitfresser finden", "Potenziale erkennen"], ["Software vergleichen", "Tools auswählen"]], e: "Diese Bereiche greifen ineinander." }
+      ],
+      practice: {
+        task: "Stell dir vor, du bist KI-Manager deines Vereins oder Ensembles. Welcher Ablauf würde am meisten von Automatisierung profitieren? Begründe kurz.",
+        hint: "Suche etwas, das sich oft wiederholt, nach Regeln abläuft und Zeit kostet.",
+        solution: "Beispiel: „Die Terminabfrage für Proben. Jedes Mal schreibe ich 15 Leuten einzeln, sammle Antworten und trage sie ein. Ein Formular mit automatischer Auswertung würde Stunden sparen.“"
+      }
+    },
+    {
+      id: "z1l3",
+      title: "Denkfehler und realistischer Nutzen",
+      icon: "⚠️",
+      lesson: `
+<p>Am Anfang machen fast alle dieselben Fehler. Wer sie kennt, spart Zeit, Geld und Frust.</p>
+<h4>Typische Denkfehler</h4>
+<ul>
+<li><b>„KI weiß alles.“</b> Nein. Sie kann überzeugend falsche Dinge sagen (Halluzinationen).</li>
+<li><b>„Ein Prompt reicht.“</b> Gute Ergebnisse entstehen durch Iteration: nachschärfen, korrigieren, verbessern.</li>
+<li><b>„Erst das Tool, dann der Zweck.“</b> Umgekehrt ist es richtig.</li>
+<li><b>„Alles auf einmal automatisieren.“</b> Besser mit einem kleinen, klaren Pilotprojekt starten.</li>
+<li><b>„KI ersetzt Menschen komplett.“</b> Meist übernimmt sie Teilaufgaben, und der Mensch kontrolliert.</li>
+<li><b>„Daten sind egal.“</b> Ohne saubere Daten und klare Abläufe bringt die beste KI wenig.</li>
+<li><b>„Datenschutz klären wir später.“</b> Das wird teuer.</li>
+</ul>
+<h4>ROI realistisch einschätzen</h4>
+<p><b>ROI</b> (Return on Investment) heißt: Was bringt es im Verhältnis zu dem, was es kostet?</p>
+<div class="ex"><b>Rechenbeispiel:</b> Eine Aufgabe dauert 30 Minuten und kommt 20-mal im Monat vor, das sind 10 Stunden. Die Automatisierung spart 80 %, also 8 Stunden. Bei einem Stundenwert von 40 € sind das 320 € pro Monat. Kostet die Lösung 50 € im Monat plus 10 Stunden Einrichtung (400 €), hat sie sich nach knapp 2 Monaten bezahlt gemacht.</div>
+<div class="tip">Rechne auch versteckte Kosten mit ein: Einrichtung, Wartung, Schulung, Kontrolle der Ergebnisse.</div>`,
+      keys: [
+        "KI kann irren → immer prüfen",
+        "Klein anfangen, dann skalieren",
+        "ROI = Nutzen im Verhältnis zu allen Kosten"
+      ],
+      quiz: [
+        { t: "mc", q: "Welcher Satz ist ein typischer Denkfehler?", o: ["Wir starten mit einem kleinen Pilotprojekt.", "Ein einziger Prompt liefert immer das perfekte Ergebnis.", "Wir prüfen KI-Ergebnisse stichprobenartig.", "Wir klären zuerst den Datenschutz."], a: 1, e: "Gute Ergebnisse entstehen durch Iteration." },
+        { t: "mc", q: "Eine Aufgabe kostet 10 Std./Monat. KI spart 50 %. Stundenwert 30 €. Wie viel sparst du pro Monat?", o: ["150 €", "300 €", "50 €", "30 €"], a: 0, e: "5 Stunden × 30 € = 150 €." },
+        { t: "tf", q: "Zum ROI gehören auch Einrichtungs- und Wartungsaufwand.", a: true, e: "Versteckte Kosten vergisst man leicht." },
+        { t: "tf", q: "Am besten automatisiert man gleich alle Prozesse auf einmal.", a: false, e: "Lieber klein starten, lernen und dann ausbauen." }
+      ],
+      practice: {
+        task: "Rechne den ROI für eine eigene Aufgabe: Wie oft kommt sie vor, wie lange dauert sie, wie viel könnte KI sparen?",
+        hint: "Formel: Häufigkeit × Dauer × Ersparnis in % × Stundenwert, minus laufende Kosten.",
+        solution: "Beispiel: E-Mails an Veranstalter, 15× im Monat à 20 Min. = 5 Std. KI spart 60 % = 3 Std. × 40 € = 120 €. Abo 20 €. Netto ca. 100 € pro Monat Nutzen."
+      }
+    },
+    {
+      id: "z1l4",
+      title: "Machine Learning und Deep Learning",
+      icon: "🔬",
+      lesson: `
+<p>Klassische Software folgt festen Regeln, die ein Mensch programmiert hat: „Wenn A, dann B.“ <b>Machine Learning (ML)</b> dreht das um: Der Computer <b>lernt Regeln selbst aus Beispielen</b>.</p>
+<div class="ex">Spam-Filter: Statt jede Spam-Regel von Hand zu schreiben, zeigt man dem System tausende Mails mit der Markierung „Spam“ oder „kein Spam“. Es lernt selbst, woran man Spam erkennt.</div>
+<h4>Drei Lernarten</h4>
+<ul>
+<li><b>Überwachtes Lernen:</b> Beispiele mit richtiger Antwort (Mail + „Spam“).</li>
+<li><b>Unüberwachtes Lernen:</b> Ohne Antworten. Das System findet selbst Gruppen und Muster, z. B. Kundentypen.</li>
+<li><b>Bestärkendes Lernen:</b> Lernen durch Belohnung und Strafe, z. B. ein Schachprogramm, das gegen sich selbst spielt.</li>
+</ul>
+<h4>Deep Learning</h4>
+<p><b>Deep Learning</b> ist eine Form von ML mit <b>künstlichen neuronalen Netzen</b>, die viele Schichten haben („deep“ = tief). Jede Schicht erkennt etwas Komplexeres: erst Kanten, dann Formen, dann ganze Gesichter.</p>
+<p><b>Training</b> heißt: Das Netz macht eine Vorhersage, vergleicht sie mit der richtigen Antwort und passt seine inneren Gewichte ein kleines Stück an. Das wiederholt es millionenfach.</p>
+<div class="tip">Die Zwiebel-Regel: <b>KI</b> ⊃ <b>Machine Learning</b> ⊃ <b>Deep Learning</b> ⊃ <b>generative KI / LLMs</b></div>
+<p>Ein Risiko heißt <b>Overfitting</b>: Das Modell lernt die Trainingsbeispiele auswendig, statt das Prinzip zu verstehen. Bei neuen Daten versagt es dann.</p>`,
+      keys: [
+        "ML = Regeln aus Beispielen lernen",
+        "Überwacht, unüberwacht, bestärkend",
+        "Deep Learning = neuronale Netze mit vielen Schichten",
+        "Overfitting = auswendig lernen statt verstehen"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne die Lernart dem Beispiel zu.", p: [["Überwachtes Lernen", "Mails mit Label „Spam“"], ["Unüberwachtes Lernen", "Kundengruppen selbst finden"], ["Bestärkendes Lernen", "Spielt gegen sich selbst und wird belohnt"]], e: "Der Unterschied liegt darin, ob und wie das System Rückmeldung bekommt." },
+        { t: "order", q: "Ordne von allgemein nach speziell.", o: ["Künstliche Intelligenz", "Machine Learning", "Deep Learning", "Large Language Models"], e: "Jede Ebene ist ein Teilbereich der vorherigen." },
+        { t: "mc", q: "Was ist Overfitting?", o: ["Das Modell ist zu klein", "Das Modell lernt die Trainingsdaten auswendig und versagt bei Neuem", "Das Modell braucht zu viel Strom", "Das Modell ist besonders gut"], a: 1, e: "Wie ein Schüler, der Prüfungsfragen auswendig lernt, ohne den Stoff zu verstehen." },
+        { t: "tf", q: "Beim Machine Learning schreibt ein Mensch alle Regeln von Hand.", a: false, e: "Genau das ist der Unterschied: Das System lernt die Regeln aus Daten." }
+      ],
+      practice: {
+        task: "Erkläre einem Bekannten in 2–3 Sätzen den Unterschied zwischen klassischer Software und Machine Learning. Nutze ein Beispiel aus der Musik.",
+        hint: "Regeln von Hand vs. Lernen aus vielen Beispielen.",
+        solution: "„Klassische Software ist wie eine Partitur: Jede Note ist vorgegeben. Machine Learning ist wie ein Musiker, der durch tausende Aufnahmen lernt, wie Swing klingt, ohne dass ihm jemand die Regel aufschreibt.“"
+      }
+    },
+    {
+      id: "z1l5",
+      title: "Generative KI und LLMs",
+      icon: "✨",
+      lesson: `
+<p><b>Generative KI</b> erzeugt <b>neue Inhalte</b>: Texte, Bilder, Musik, Code, Sprache. Die wichtigste Form für Textarbeit sind <b>Large Language Models (LLMs)</b>, große Sprachmodelle wie Claude, GPT oder Gemini.</p>
+<h4>Wie ein LLM funktioniert, ganz einfach</h4>
+<p>Ein LLM hat beim Training riesige Textmengen gesehen. Es hat gelernt, <b>vorherzusagen, welches Textstück als Nächstes am wahrscheinlichsten kommt</b>. Aus vielen solcher Vorhersagen hintereinander entstehen ganze Antworten.</p>
+<ul>
+<li><b>Token:</b> Die Einheit, in der ein LLM Text verarbeitet. Ein Token ist etwa ein Wortteil. Als Faustregel: 100 Tokens entsprechen ca. 60–75 Wörtern.</li>
+<li><b>Kontextfenster:</b> Wie viel Text das Modell gleichzeitig „im Blick“ hat, also Gespräch plus Dokumente.</li>
+<li><b>Prompt:</b> Deine Eingabe bzw. Anweisung an das Modell.</li>
+</ul>
+<h4>Prädiktive vs. generative KI</h4>
+<p><b>Prädiktive KI</b> sagt etwas voraus oder ordnet ein, z. B. „Kündigt dieser Kunde wahrscheinlich?“. <b>Generative KI</b> erschafft etwas Neues, z. B. „Schreibe eine Mail an diesen Kunden“.</p>
+<h4>Multimodal</h4>
+<p><b>Multimodale</b> Modelle verstehen und erzeugen mehrere Formate: Text, Bilder, Audio, teils Video. Du kannst z. B. ein Foto eines Dienstplans hochladen und daraus eine Tabelle machen lassen.</p>
+<div class="tip">Ein LLM „weiß“ nichts im menschlichen Sinn. Es erzeugt <b>wahrscheinliche</b> Texte. Darum klingt es immer überzeugend, auch wenn es falsch liegt.</div>`,
+      keys: [
+        "LLM = sagt das wahrscheinlich nächste Token vorher",
+        "Token ≈ Wortteil, Kontextfenster = Arbeitsgedächtnis",
+        "Prädiktiv = vorhersagen, generativ = erzeugen",
+        "Multimodal = Text, Bild, Audio …"
+      ],
+      quiz: [
+        { t: "mc", q: "Was macht ein LLM im Kern?", o: ["Es durchsucht das Internet live", "Es sagt das wahrscheinlich nächste Textstück vorher", "Es kopiert Texte aus einer Datenbank", "Es versteht Text wie ein Mensch"], a: 1, e: "Aus vielen Vorhersagen nacheinander entsteht die Antwort." },
+        { t: "match", q: "Ordne die Begriffe zu.", p: [["Token", "Wortteil, Recheneinheit des Modells"], ["Kontextfenster", "Wie viel Text gleichzeitig im Blick ist"], ["Prompt", "Deine Anweisung an das Modell"], ["Multimodal", "Versteht Text, Bild, Audio"]], e: "Diese Begriffe brauchst du ständig, auch später bei Claude Code." },
+        { t: "mc", q: "Welche Aufgabe ist generativ (statt prädiktiv)?", o: ["Vorhersagen, ob ein Konzert ausverkauft wird", "Ein Programmheft-Text schreiben", "Spam erkennen", "Kreditrisiko einschätzen"], a: 1, e: "Generativ = etwas Neues erschaffen." },
+        { t: "tf", q: "Weil ein LLM sehr flüssig formuliert, ist seine Antwort immer richtig.", a: false, e: "Flüssig heißt nicht korrekt. Darum ist Prüfen so wichtig." }
+      ],
+      practice: {
+        task: "Überlege: Für welche deiner Aufgaben wäre ein multimodales Modell nützlich (also mit Bild oder Audio statt nur Text)?",
+        hint: "Fotos, Scans, Sprachnachrichten, Aufnahmen …",
+        solution: "Beispiele: Foto eines handschriftlichen Probenplans → Tabelle; Aufnahme einer Besprechung → Protokoll; Scan einer Rechnung → Buchungsdaten."
+      }
+    },
+    {
+      id: "z1l6",
+      title: "Halluzinationen",
+      icon: "🌀",
+      lesson: `
+<p>Eine <b>Halluzination</b> ist eine Antwort, die überzeugend klingt, aber <b>falsch oder erfunden</b> ist: ein erfundenes Zitat, eine falsche Jahreszahl, eine Quelle, die es nicht gibt.</p>
+<h4>Warum passiert das?</h4>
+<p>Ein LLM erzeugt <b>wahrscheinliche</b> Texte, nicht <b>geprüfte</b> Fakten. Fehlt ihm Wissen, füllt es die Lücke mit etwas, das plausibel klingt. Es hat kein eingebautes Gefühl für „Das weiß ich nicht“.</p>
+<h4>Wann ist das Risiko hoch?</h4>
+<ul>
+<li>Sehr spezielle Fakten wie Namen, Zahlen, Paragraphen oder Quellen</li>
+<li>Ereignisse nach dem Trainingsstand des Modells</li>
+<li>Fragen, die eine falsche Annahme enthalten („Warum hat Mozart Jazz komponiert?“)</li>
+</ul>
+<h4>Gegenmittel</h4>
+<ul>
+<li><b>Quellen mitgeben:</b> Lade das Dokument hoch, statt aus dem Gedächtnis fragen zu lassen. Das ist die Idee hinter <b>RAG</b>, das du in Zone 2 kennenlernst.</li>
+<li><b>Websuche aktivieren</b> für aktuelle Infos.</li>
+<li><b>Erlaubnis zum Nichtwissen:</b> „Wenn du es nicht sicher weißt, sag es.“</li>
+<li><b>Quellenangaben verlangen</b> und stichprobenartig prüfen.</li>
+<li><b>Mensch im Prozess</b> (Human in the Loop) bei wichtigen Entscheidungen.</li>
+</ul>
+<div class="tip">Faustregel: Je teurer ein Fehler, desto mehr menschliche Kontrolle.</div>`,
+      keys: [
+        "Halluzination = überzeugend, aber falsch",
+        "Ursache: Wahrscheinlichkeit statt Faktenprüfung",
+        "Gegenmittel: Quellen geben, Nichtwissen erlauben, prüfen"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist eine Halluzination?", o: ["Ein Absturz der KI", "Eine überzeugend klingende, aber falsche Antwort", "Ein Bild, das die KI erzeugt", "Ein besonders kreativer Prompt"], a: 1, e: "Gefährlich, weil es so glaubwürdig klingt." },
+        { t: "mc", q: "Welche Maßnahme senkt Halluzinationen am stärksten?", o: ["Höflicher fragen", "Die relevanten Dokumente direkt mitgeben", "In Großbuchstaben schreiben", "Die Frage dreimal stellen"], a: 1, e: "Mit Quelle im Kontext muss das Modell nicht raten." },
+        { t: "tf", q: "Fragen mit falscher Annahme („Warum hat Beethoven die Oper Carmen geschrieben?“) erhöhen das Halluzinationsrisiko.", a: true, e: "Das Modell neigt dazu, die Annahme mitzuspielen." },
+        { t: "tf", q: "Bei wichtigen Entscheidungen sollte immer ein Mensch das Ergebnis prüfen.", a: true, e: "Human in the Loop." }
+      ],
+      practice: {
+        task: "Schreibe einen Zusatz, den du an Prompts anhängen kannst, um Halluzinationen zu reduzieren.",
+        hint: "Erlaube Nichtwissen und verlange Quellen.",
+        solution: "„Antworte nur auf Basis der beigefügten Dokumente. Wenn die Information dort nicht steht oder du unsicher bist, schreibe ‚Nicht sicher‘ statt zu raten. Nenne zu jeder Aussage die Stelle im Dokument.“"
+      }
+    },
+    {
+      id: "z1l7",
+      title: "Assistenten, Agenten und APIs",
+      icon: "🤖",
+      lesson: `
+<h4>Assistent</h4>
+<p>Ein <b>KI-Assistent</b> antwortet auf deine Fragen. Du fragst, er antwortet, und du entscheidest, was du damit machst. Beispiel: Chat mit Claude.</p>
+<h4>Agent</h4>
+<p>Ein <b>KI-Agent</b> bekommt ein <b>Ziel</b> und arbeitet selbstständig in mehreren Schritten darauf hin. Er kann <b>Werkzeuge (Tools)</b> benutzen: im Web suchen, Dateien lesen und schreiben, E-Mails verschicken, Programme ausführen. Er plant, handelt, prüft das Ergebnis und macht weiter.</p>
+<div class="ex"><b>Assistent:</b> „Schreib mir eine Mail an den Veranstalter.“ → Du kopierst sie und schickst sie selbst.<br><b>Agent:</b> „Kläre mit allen Veranstaltern die Technikanforderungen.“ → Er liest die Verträge, schreibt die Mails, sammelt die Antworten und erstellt eine Übersicht.</div>
+<p><b>Claude Code</b>, das Ziel deiner Reise, ist genau so ein Agent.</p>
+<h4>API</h4>
+<p>Eine <b>API</b> (Application Programming Interface) ist eine <b>Schnittstelle, über die Programme miteinander sprechen</b>. Stell dir einen Kellner vor: Du (Programm A) bestellst beim Kellner (API), er bringt die Bestellung in die Küche (Programm B) und das Essen zurück.</p>
+<ul>
+<li>Über die API eines KI-Anbieters kann deine eigene Software das Modell nutzen, ganz ohne Chatfenster.</li>
+<li>Abgerechnet wird meist <b>pro Token</b>, also nach Verbrauch.</li>
+</ul>
+<div class="tip">Agenten sind mächtig, aber riskanter: Je mehr sie selbst dürfen, desto wichtiger sind klare Grenzen und Berechtigungen.</div>`,
+      keys: [
+        "Assistent = antwortet, Mensch handelt",
+        "Agent = verfolgt Ziel selbstständig mit Tools",
+        "API = Schnittstelle zwischen Programmen (Kellner-Bild)",
+        "Claude Code ist ein Agent"
+      ],
+      quiz: [
+        { t: "mc", q: "Was unterscheidet einen Agenten von einem Assistenten?", o: ["Agenten sind immer kostenlos", "Agenten verfolgen ein Ziel selbstständig in mehreren Schritten mit Tools", "Agenten können nur Bilder erzeugen", "Es gibt keinen Unterschied"], a: 1, e: "Planen, handeln, prüfen, weitermachen." },
+        { t: "mc", q: "Welches Bild beschreibt eine API am besten?", o: ["Ein Tresor", "Ein Kellner zwischen Gast und Küche", "Ein Bücherregal", "Ein Taschenrechner"], a: 1, e: "Die API nimmt Anfragen entgegen und liefert Ergebnisse zurück." },
+        { t: "tf", q: "Claude Code ist ein KI-Agent.", a: true, e: "Er liest Dateien, führt Befehle aus und arbeitet in mehreren Schritten." },
+        { t: "tf", q: "Je mehr ein Agent selbstständig darf, desto weniger wichtig sind Berechtigungen.", a: false, e: "Genau umgekehrt." }
+      ],
+      practice: {
+        task: "Formuliere eine Aufgabe einmal als Assistenten-Anfrage und einmal als Agenten-Auftrag.",
+        hint: "Assistent = einzelnes Ergebnis. Agent = Ziel mit mehreren Schritten.",
+        solution: "Assistent: „Fasse diese Vereinssatzung zusammen.“ Agent: „Prüfe alle Dokumente im Ordner ‚Verein‘, finde fehlende Unterschriften, erstelle eine Liste und entwirf Erinnerungsmails an die Betroffenen.“"
+      }
+    },
+    {
+      id: "z1l8",
+      title: "KI-Strategie: Process Map und 5 Phasen",
+      icon: "🗺️",
+      lesson: `
+<h4>Process Map</h4>
+<p>Eine <b>Process Map</b> (Prozesslandkarte) zeigt alle wichtigen Abläufe einer Organisation auf einen Blick: Wer macht was, in welcher Reihenfolge, mit welchen Tools? Erst wenn du einen Prozess sichtbar machst, erkennst du, wo KI helfen kann.</p>
+<div class="ex">Beispiel „Konzert organisieren“: Anfrage → Termin prüfen → Angebot → Vertrag → Besetzung → Probenplan → Noten → Reise → Abrechnung.</div>
+<h4>Engpasskonzentriertes Arbeiten</h4>
+<p>Eine Kette ist nur so stark wie ihr schwächstes Glied. Statt überall ein bisschen zu verbessern, suchst du den <b>Engpass</b>: den Schritt, der am meisten bremst. Dort setzt du zuerst an.</p>
+<h4>KI-Strategie in 5 Phasen</h4>
+<ol>
+<li><b>Analyse:</b> Prozesse erfassen, Zeitfresser und Engpässe finden.</li>
+<li><b>Priorisierung:</b> Nach Nutzen und Aufwand ordnen. Zuerst die „Quick Wins“ mit großem Nutzen und wenig Aufwand.</li>
+<li><b>Pilot:</b> Einen Anwendungsfall klein testen und messen.</li>
+<li><b>Umsetzung:</b> Das, was funktioniert, sauber einführen, dokumentieren und schulen.</li>
+<li><b>Skalierung und Optimierung:</b> Auf weitere Bereiche übertragen, laufend messen und verbessern.</li>
+</ol>
+<div class="tip">Ein <b>Lastenheft</b> beschreibt, <b>was</b> eine Lösung leisten soll, aus Sicht des Auftraggebers. Es ist die Basis für jeden Bot, jeden Agenten und jede Automation.</div>`,
+      keys: [
+        "Process Map macht Abläufe sichtbar",
+        "Zuerst den Engpass verbessern",
+        "5 Phasen: Analyse → Priorisierung → Pilot → Umsetzung → Skalierung",
+        "Lastenheft = Was soll die Lösung können?"
+      ],
+      quiz: [
+        { t: "order", q: "Bringe die 5 Phasen der KI-Strategie in die richtige Reihenfolge.", o: ["Analyse", "Priorisierung", "Pilot", "Umsetzung", "Skalierung und Optimierung"], e: "Erst verstehen, dann klein testen, dann ausrollen." },
+        { t: "mc", q: "Was ist ein „Quick Win“?", o: ["Großer Nutzen bei wenig Aufwand", "Ein teures Großprojekt", "Ein Gewinnspiel", "Ein besonders schnelles Modell"], a: 0, e: "Quick Wins schaffen früh Vertrauen und Budget." },
+        { t: "mc", q: "Wo setzt engpasskonzentriertes Arbeiten an?", o: ["Beim schönsten Prozess", "Beim Schritt, der am meisten bremst", "Überall gleichzeitig", "Beim billigsten Tool"], a: 1, e: "Das schwächste Glied bestimmt die Kette." },
+        { t: "tf", q: "Ein Lastenheft beschreibt, was eine Lösung leisten soll.", a: true, e: "Das Wie kommt später, z. B. im Pflichtenheft des Umsetzers." }
+      ],
+      practice: {
+        task: "Zeichne gedanklich eine Mini-Process-Map für einen deiner Abläufe (5–8 Schritte) und markiere den Engpass.",
+        hint: "Schreibe die Schritte mit Pfeilen hintereinander. Wo wartest du am längsten?",
+        solution: "Beispiel Bewerbung: Stelle finden → Unterlagen anpassen → Anschreiben → Aufnahmen auswählen → Hochladen → Nachfassen. Engpass: Anschreiben, jedes Mal 2 Stunden. Dort hilft KI am meisten."
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z2",
+  title: "Tools und Automation",
+  subtitle: "Software verbinden und Abläufe automatisieren",
+  icon: "⚙️",
+  color: "#f59e0b",
+  badge: { name: "Workflow-Weber", icon: "🕸️" },
+  levels: [
+    {
+      id: "z2l1",
+      title: "Das digitale Fundament",
+      icon: "🧱",
+      lesson: `
+<p>Bevor KI etwas automatisieren kann, braucht es ein <b>digitales Fundament</b>: Daten und Abläufe müssen in Software liegen, nicht auf Papier oder im Kopf.</p>
+<h4>Typische Bausteine</h4>
+<ul>
+<li><b>Büro-Suite:</b> Google Workspace oder Microsoft 365 für Mail, Kalender, Dokumente und Tabellen</li>
+<li><b>Kommunikation:</b> Slack oder Teams statt endloser Mail-Ketten</li>
+<li><b>Aufgaben:</b> Trello oder Asana als Boards mit Karten</li>
+<li><b>Termine:</b> Calendly, damit andere selbst freie Slots buchen</li>
+<li><b>Unterschriften:</b> DocuSign für digitale Verträge</li>
+<li><b>Passwörter:</b> 1Password oder ein anderer Passwort-Manager, sicher und teilbar</li>
+<li><b>Rechnungen:</b> z. B. Easybill</li>
+<li><b>Formulare:</b> Jotform oder Google Forms</li>
+<li><b>Design:</b> Canva</li>
+</ul>
+<h4>Warum das für KI wichtig ist</h4>
+<p>Diese Programme nennt man <b>SaaS</b> (Software as a Service): Sie laufen im Browser und haben fast alle eine <b>API</b>. Dadurch kann man sie <b>miteinander verbinden</b>. Ein Formular löst eine Rechnung aus, die Rechnung erzeugt eine Slack-Nachricht und so weiter.</p>
+<div class="tip">Ein Passwort-Manager ist Pflicht, sobald du mit API-Keys arbeitest. Die gehören nie in eine Mail oder ein offenes Dokument.</div>`,
+      keys: [
+        "Erst digitalisieren, dann automatisieren",
+        "SaaS-Tools haben APIs und lassen sich verbinden",
+        "Passwort-Manager für Zugangsdaten und Keys"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne das Tool seiner Aufgabe zu.", p: [["Calendly", "Terminbuchung"], ["DocuSign", "Digitale Unterschrift"], ["1Password", "Passwörter sicher speichern"], ["Trello", "Aufgaben-Board"]], e: "Jedes Tool löst ein klar umrissenes Problem." },
+        { t: "mc", q: "Was bedeutet SaaS?", o: ["Software as a Service", "Secure and actual Software", "Save all and Sync", "System as a Server"], a: 0, e: "Software, die online als Dienst läuft, meist im Abo." },
+        { t: "tf", q: "Abläufe, die nur auf Papier existieren, lassen sich leicht mit KI automatisieren.", a: false, e: "Erst digitalisieren, dann automatisieren." }
+      ],
+      practice: {
+        task: "Liste deine aktuellen Tools auf (Mail, Kalender, Dateien, Kommunikation). Wo fehlt dir noch ein digitaler Baustein?",
+        hint: "Wo arbeitest du noch mit Papier, Zetteln oder im Kopf?",
+        solution: "Beispiel: Mail und Kalender: Google. Dateien: Dropbox. Kommunikation: WhatsApp. Fehlt: Passwort-Manager und ein gemeinsames Aufgaben-Board für den Verein."
+      }
+    },
+    {
+      id: "z2l2",
+      title: "APIs, API-Keys und Webhooks",
+      icon: "🔑",
+      lesson: `
+<h4>API-Key</h4>
+<p>Ein <b>API-Key</b> ist wie ein <b>Hausschlüssel</b> für eine Schnittstelle. Er beweist: „Dieses Programm darf hier rein, und die Kosten gehen auf dieses Konto.“</p>
+<ul>
+<li>Behandle ihn wie ein Passwort: nie teilen, nie öffentlich hochladen, z. B. auf GitHub.</li>
+<li>Wenn ein Key doch öffentlich wird: sofort löschen (widerrufen) und einen neuen erstellen.</li>
+<li>Setze Ausgabelimits beim Anbieter, damit ein gestohlener Key nicht teuer wird.</li>
+</ul>
+<h4>Pull vs. Push</h4>
+<p><b>API-Abfrage (Pull):</b> Dein Programm fragt aktiv nach: „Gibt es neue Bestellungen?“ Machst du das ständig, nennt man es <b>Polling</b>. Das ist ineffizient.</p>
+<p><b>Webhook (Push):</b> Das andere Programm meldet sich von selbst, sobald etwas passiert: „Neue Bestellung!“ Es schickt die Daten an eine <b>Webhook-URL</b>, die du vorher hinterlegt hast.</p>
+<div class="ex">Vergleich: Polling = alle 5 Minuten zum Briefkasten laufen. Webhook = der Postbote klingelt, wenn ein Brief da ist.</div>
+<h4>JSON</h4>
+<p>Daten zwischen Programmen werden meist als <b>JSON</b> verschickt, ein einfaches Textformat:</p>
+<pre>{ "name": "Anna", "instrument": "Pauke", "termine": 3 }</pre>`,
+      keys: [
+        "API-Key = Schlüssel, nie öffentlich teilen",
+        "Polling = selbst nachfragen; Webhook = wird benachrichtigt",
+        "JSON = Standard-Datenformat"
+      ],
+      quiz: [
+        { t: "mc", q: "Dein API-Key ist versehentlich auf GitHub gelandet. Was tust du zuerst?", o: ["Nichts, das merkt keiner", "Key beim Anbieter widerrufen und neu erstellen", "Die Datei umbenennen", "Den Key per Mail an den Support schicken"], a: 1, e: "Automatische Bots durchsuchen GitHub nach Keys, oft innerhalb von Minuten." },
+        { t: "mc", q: "Was ist ein Webhook?", o: ["Eine Programmiersprache", "Eine automatische Benachrichtigung, wenn ein Ereignis eintritt", "Ein Passwort-Manager", "Ein KI-Modell"], a: 1, e: "Push statt Pull: Der Postbote klingelt." },
+        { t: "match", q: "Ordne zu.", p: [["Polling", "Regelmäßig selbst nachfragen"], ["Webhook", "Wird bei Ereignis benachrichtigt"], ["JSON", "Textformat für Daten"], ["API-Key", "Zugangsschlüssel"]], e: "Diese vier Begriffe begegnen dir in jeder Automation." }
+      ],
+      practice: {
+        task: "Schreibe die Daten einer Probe (Datum, Ort, Besetzung als Liste) als JSON auf.",
+        hint: "Geschweifte Klammern für Objekte, eckige Klammern für Listen, Texte in Anführungszeichen.",
+        solution: "{ \"datum\": \"2026-11-20\", \"ort\": \"Probenraum A\", \"besetzung\": [\"Trompete 1\", \"Horn\", \"Pauke\"] }"
+      }
+    },
+    {
+      id: "z2l3",
+      title: "Make: Automation per Baukasten",
+      icon: "🧩",
+      lesson: `
+<p><b>Make</b> (früher Integromat) ist ein <b>No-Code-Tool</b>: Du baust Automationen per Drag-and-drop, ohne zu programmieren.</p>
+<h4>Grundbegriffe</h4>
+<ul>
+<li><b>Szenario:</b> Eine komplette Automation.</li>
+<li><b>Trigger:</b> Das Startsignal, z. B. „Neues Formular ausgefüllt“ oder „Jeden Montag 8 Uhr“.</li>
+<li><b>Module:</b> Die einzelnen Schritte, z. B. „Zeile in Google Sheets anlegen“ oder „Mail senden“.</li>
+<li><b>Mapping:</b> Daten aus einem Schritt in den nächsten übernehmen, z. B. den Namen aus dem Formular in die Mail.</li>
+<li><b>Router und Filter:</b> Verzweigungen wie „Wenn Betrag über 500 €, dann …“.</li>
+<li><b>Operationen:</b> Make rechnet nach ausgeführten Schritten ab.</li>
+</ul>
+<div class="ex"><b>Beispiel-Szenario:</b> Trigger: neue Anmeldung im Jotform → Modul: Daten in Google Sheet speichern → Modul: Claude formuliert eine persönliche Bestätigung → Modul: Mail senden → Modul: Slack-Nachricht an das Team.</div>
+<div class="tip">Make eignet sich gut für den Einstieg: Es läuft in der Cloud und ist schnell gebaut. Bei sehr vielen Ausführungen kann es teuer werden.</div>`,
+      keys: [
+        "Make = No-Code-Automation in der Cloud",
+        "Szenario = Trigger + Module",
+        "Mapping = Daten weiterreichen; Router = Verzweigung"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist ein Trigger?", o: ["Das Ende einer Automation", "Das Startsignal einer Automation", "Ein Fehler", "Ein Bezahlplan"], a: 1, e: "Ohne Trigger läuft nichts los." },
+        { t: "order", q: "Bringe das Anmelde-Szenario in die richtige Reihenfolge.", o: ["Formular wird ausgefüllt (Trigger)", "Daten im Sheet speichern", "KI formuliert Bestätigung", "Bestätigungsmail senden"], e: "Trigger zuerst, dann die Module nacheinander." },
+        { t: "tf", q: "Für Make muss man programmieren können.", a: false, e: "Make ist ein No-Code-Tool." }
+      ],
+      practice: {
+        task: "Entwirf ein Make-Szenario für eine deiner Aufgaben: Trigger + 3 Module.",
+        hint: "Was löst den Ablauf aus? Was soll danach automatisch passieren?",
+        solution: "Trigger: neuer Termin im Kalender mit „Konzert“ im Titel → Modul 1: Eintrag in Konzert-Sheet → Modul 2: Claude erstellt Packliste aus Programm → Modul 3: Mail mit Packliste an mich."
+      }
+    },
+    {
+      id: "z2l4",
+      title: "n8n und Self-Hosting",
+      icon: "🔗",
+      lesson: `
+<p><b>n8n</b> („n-eight-n“) ist wie Make ein Automations-Tool mit Bausteinen. Hier heißen sie <b>Nodes</b>, und die Abläufe heißen <b>Workflows</b>.</p>
+<h4>Was n8n besonders macht</h4>
+<ul>
+<li><b>Self-Hosting möglich:</b> Du kannst n8n auf deinem eigenen Server betreiben. Dann bleiben die Daten bei dir, gut für den Datenschutz.</li>
+<li><b>Kostenkontrolle:</b> Selbst gehostet zahlst du nur den Server, nicht jede einzelne Ausführung.</li>
+<li><b>Starke KI-Nodes:</b> Eingebaute Bausteine für KI-Agenten, Gedächtnis und Vektordatenbanken.</li>
+<li><b>Code möglich:</b> Wenn ein Baustein fehlt, kannst du kleine Code-Schnipsel einfügen.</li>
+</ul>
+<h4>Self-Hosting, kurz erklärt</h4>
+<ul>
+<li><b>Server mieten</b>, z. B. bei <b>Hetzner</b>, einem deutschen Anbieter mit Rechenzentren in der EU. Ein kleiner Server kostet wenige Euro im Monat.</li>
+<li><b>Coolify</b> ist eine Oberfläche, mit der du Programme wie n8n auf deinem Server per Klick installierst und verwaltest, ohne viel Kommandozeile.</li>
+<li>Du bist dann selbst verantwortlich für <b>Updates, Backups und Sicherheit</b>.</li>
+</ul>
+<div class="tip">Make oder n8n? Make für den schnellen Einstieg in der Cloud. n8n, wenn Datenschutz, viele Ausführungen oder komplexe KI-Agenten wichtig sind.</div>`,
+      keys: [
+        "n8n = Workflows aus Nodes",
+        "Self-Hosting: Daten bleiben bei dir, mehr Verantwortung",
+        "Hetzner = Server, Coolify = einfache Verwaltung"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist ein Hauptvorteil von selbst gehostetem n8n?", o: ["Man muss sich um nichts kümmern", "Die Daten bleiben auf dem eigenen Server", "Es ist immer schneller als alles andere", "Es braucht kein Internet"], a: 1, e: "Datenhoheit, aber auch Verantwortung für Updates und Backups." },
+        { t: "match", q: "Ordne zu.", p: [["Hetzner", "Server-Anbieter"], ["Coolify", "Oberfläche zum Installieren von Apps auf dem Server"], ["Node", "Baustein in n8n"], ["Workflow", "Kompletter Ablauf in n8n"]], e: "Mit diesen vier Begriffen kannst du n8n-Anleitungen folgen." },
+        { t: "tf", q: "Wer selbst hostet, ist auch für Backups und Sicherheitsupdates verantwortlich.", a: true, e: "Freiheit bringt Pflichten." }
+      ],
+      practice: {
+        task: "Entscheide für deinen Verein: Make oder selbst gehostetes n8n? Begründe mit 2 Argumenten.",
+        hint: "Denk an Datenschutz (Mitgliederdaten), technisches Können und Budget.",
+        solution: "Beispiel: n8n selbst gehostet, weil 1) Mitgliederdaten in der EU auf eigenem Server bleiben und 2) viele kleine Abläufe günstig laufen. Alternative: Make, wenn niemand Zeit für Serverwartung hat."
+      }
+    },
+    {
+      id: "z2l5",
+      title: "RAG: KI mit eigenem Wissen",
+      icon: "📚",
+      lesson: `
+<p>Ein LLM kennt deine internen Dokumente nicht. <b>RAG</b> (Retrieval Augmented Generation) löst das: Vor der Antwort werden <b>passende Textstellen aus deinen Dokumenten gesucht</b> und dem Modell mitgegeben.</p>
+<h4>So funktioniert RAG</h4>
+<ol>
+<li><b>Aufbereiten:</b> Dokumente werden in kleine Abschnitte zerlegt (<b>Chunks</b>).</li>
+<li><b>Embeddings:</b> Jeder Abschnitt wird in eine Zahlenreihe umgewandelt, die seine <b>Bedeutung</b> beschreibt.</li>
+<li><b>Speichern:</b> Diese Zahlen kommen in eine <b>Vektordatenbank</b>, z. B. Supabase, Pinecone oder Qdrant.</li>
+<li><b>Suchen (Retrieval):</b> Bei einer Frage werden die bedeutungsähnlichsten Abschnitte gefunden, auch wenn andere Wörter benutzt werden.</li>
+<li><b>Antworten (Generation):</b> Das LLM bekommt Frage und Abschnitte und formuliert die Antwort.</li>
+</ol>
+<div class="ex">Frage: „Wie viel Urlaub habe ich?“ → RAG findet den Abschnitt „Jahresurlaub: 30 Tage“ im Tarifvertrag, obwohl dort nicht „Urlaub haben“ steht.</div>
+<h4>RAG, Fine-Tuning oder beides?</h4>
+<ul>
+<li><b>RAG:</b> Für <b>Wissen</b>, das sich ändert. Leicht aktuell zu halten und Quellen sind nachvollziehbar.</li>
+<li><b>Fine-Tuning:</b> Das Modell wird mit eigenen Beispielen nachtrainiert. Gut für <b>Stil und Format</b>, aufwendig und schlecht für wechselndes Wissen.</li>
+<li><b>RAFT:</b> Eine Kombination: Das Modell wird darauf trainiert, gut mit gefundenen Dokumenten umzugehen.</li>
+</ul>`,
+      keys: [
+        "RAG = erst passende Stellen suchen, dann antworten",
+        "Chunks → Embeddings → Vektordatenbank",
+        "RAG für Wissen, Fine-Tuning für Stil"
+      ],
+      quiz: [
+        { t: "order", q: "Bringe die RAG-Schritte in die richtige Reihenfolge.", o: ["Dokumente in Chunks zerlegen", "Embeddings berechnen", "In Vektordatenbank speichern", "Passende Chunks zur Frage suchen", "LLM formuliert die Antwort"], e: "Aufbereiten → Speichern → Suchen → Generieren." },
+        { t: "mc", q: "Was ist ein Embedding?", o: ["Ein eingebettetes Video", "Eine Zahlenreihe, die die Bedeutung eines Textes beschreibt", "Ein Passwort", "Ein Dateiformat für PDFs"], a: 1, e: "So kann man nach Bedeutung statt nach exakten Wörtern suchen." },
+        { t: "mc", q: "Deine Preisliste ändert sich jeden Monat. Was nutzt du?", o: ["Fine-Tuning", "RAG", "Gar nichts", "Ein größeres Modell"], a: 1, e: "Bei RAG tauschst du einfach das Dokument aus." },
+        { t: "tf", q: "RAG senkt Halluzinationen, weil das Modell echte Quellen im Kontext hat.", a: true, e: "Deshalb ist RAG die Basis vieler Firmen-Chatbots." }
+      ],
+      practice: {
+        task: "Welche Dokumente würdest du in einen RAG-Bot für deinen Verein oder dein Ensemble laden? Nenne 3–5.",
+        hint: "Was fragen Mitglieder oder Kollegen immer wieder?",
+        solution: "Beispiel: Satzung, Beitragsordnung, Probenregeln, Reise-Checkliste, FAQ zu Auftritten. Typische Frage: „Bis wann muss ich mich für die Reise anmelden?“"
+      }
+    },
+    {
+      id: "z2l6",
+      title: "Die Microsoft-Welt",
+      icon: "🪟",
+      lesson: `
+<p>Viele Firmen arbeiten mit <b>Microsoft 365</b>. Dafür gibt es eigene KI- und Automationswerkzeuge.</p>
+<ul>
+<li><b>Microsoft 365 Copilot:</b> KI direkt in Word, Excel, Outlook, Teams und PowerPoint. Copilot kennt deine Mails, Dateien und Termine im Unternehmen, sofern du Zugriff darauf hast. Beispiel: „Fasse die Teams-Besprechung zusammen und erstelle Aufgaben daraus.“</li>
+<li><b>Power Automate:</b> Das Automationstool von Microsoft, vergleichbar mit Make und n8n, eng verzahnt mit Outlook, SharePoint und Teams.</li>
+<li><b>Azure:</b> Die Cloud-Plattform von Microsoft. Dort kann man KI-Modelle (Azure OpenAI und andere) in eigenen, abgesicherten Umgebungen betreiben, oft mit Rechenzentren in der EU.</li>
+</ul>
+<h4>Wann lohnt sich das?</h4>
+<p>Wenn ein Unternehmen ohnehin in der Microsoft-Welt arbeitet, ist der Einstieg oft am einfachsten: Rechte, Anmeldung und Datenschutzverträge sind schon vorhanden.</p>
+<div class="tip">Copilot findet alles, worauf du Zugriff hast. Falsch gesetzte Freigaben in SharePoint werden dadurch plötzlich sichtbar. Vor der Einführung also die Berechtigungen aufräumen!</div>`,
+      keys: [
+        "M365 Copilot = KI in Office-Programmen",
+        "Power Automate = Microsofts Automationstool",
+        "Azure = Microsoft-Cloud, auch für KI-Modelle",
+        "Vor Copilot: Berechtigungen aufräumen"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne zu.", p: [["Copilot", "KI in Word, Excel, Outlook"], ["Power Automate", "Automationen im Microsoft-Umfeld"], ["Azure", "Cloud-Plattform von Microsoft"]], e: "Alle drei greifen ineinander." },
+        { t: "tf", q: "Copilot kann alle Dateien finden, auf die der Nutzer Zugriff hat, also auch falsch freigegebene.", a: true, e: "Darum vorher die Berechtigungen prüfen." },
+        { t: "mc", q: "Welches Tool ist mit Make und n8n am ehesten vergleichbar?", o: ["Azure", "Power Automate", "Excel", "Teams"], a: 1, e: "Power Automate baut Abläufe aus Triggern und Aktionen." }
+      ],
+      practice: {
+        task: "Formuliere einen Auftrag an M365 Copilot (oder einen anderen Assistenten) für eine Besprechung.",
+        hint: "Was soll mit dem Gespräch passieren? Zusammenfassung, Aufgaben, Verantwortliche, Fristen?",
+        solution: "„Fasse die Vorstandssitzung in 5 Stichpunkten zusammen. Erstelle danach eine Tabelle mit Aufgabe, verantwortlicher Person und Frist. Markiere offene Entscheidungen.“"
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z3",
+  title: "Prompt Engineering",
+  subtitle: "Mit KI richtig sprechen",
+  icon: "💬",
+  color: "#10b981",
+  badge: { name: "Prompt-Profi", icon: "🎯" },
+  levels: [
+    {
+      id: "z3l1",
+      title: "Das Prompting-Mindset",
+      icon: "🧑‍🏫",
+      lesson: `
+<p>Stell dir vor, die KI ist eine <b>sehr kluge neue Praktikantin</b>, die gerade angefangen hat. Sie weiß viel, kennt aber <b>dich, dein Projekt und deine Erwartungen</b> nicht. Alles, was sie wissen muss, musst du ihr sagen.</p>
+<h4>Die Bausteine eines guten Prompts</h4>
+<ul>
+<li><b>Rolle:</b> „Du bist erfahrene Orchestermanagerin.“</li>
+<li><b>Kontext:</b> Hintergrund, Zielgruppe, Situation</li>
+<li><b>Aufgabe:</b> klar und konkret, was zu tun ist</li>
+<li><b>Format:</b> Liste, Tabelle, Mail, Länge, Tonfall</li>
+<li><b>Beispiele:</b> So soll es aussehen</li>
+<li><b>Grenzen:</b> Was soll vermieden werden?</li>
+</ul>
+<div class="ex"><b>Schwach:</b> „Schreib eine Mail an den Veranstalter.“<br><b>Stark:</b> „Du bist mein Assistent. Schreibe eine kurze, freundliche Mail an den Veranstalter des Konzerts am 12.12. in Bamberg. Frage nach Bühnenmaßen, Anlieferzeit und ob Pauken vor Ort sind. Maximal 120 Wörter, Sie-Form, Unterschrift: Anna.“</div>
+<h4>Iteration</h4>
+<p>Der erste Entwurf ist selten perfekt. Gib konkretes Feedback: „Kürzer“, „förmlicher“, „Punkt 2 weglassen“. Das ist kein Scheitern, sondern der normale Weg.</p>
+<div class="tip">Strukturiere lange Prompts mit Überschriften oder Markierungen wie &lt;kontext&gt; … &lt;/kontext&gt;. Claude kann damit besonders gut umgehen.</div>`,
+      keys: [
+        "KI = kluge Praktikantin ohne Vorwissen über dich",
+        "Rolle, Kontext, Aufgabe, Format, Beispiele, Grenzen",
+        "Iterieren ist normal"
+      ],
+      quiz: [
+        { t: "mc", q: "Welcher Prompt ist am besten?", o: ["Schreib was über Pauken.", "Pauken!", "Schreibe einen 150-Wörter-Text für ein Programmheft über die Pauke im Barock, für Laien verständlich, mit einem Beispiel von Bach.", "Bitte hilf mir."], a: 2, e: "Länge, Zielgruppe, Thema und Beispiel sind klar." },
+        { t: "match", q: "Ordne den Prompt-Teil seinem Baustein zu.", p: [["„Du bist Steuerberaterin.“", "Rolle"], ["„Als Tabelle, max. 10 Zeilen.“", "Format"], ["„Ich bin freiberuflicher Musiker in Bayern.“", "Kontext"], ["„Keine Fachbegriffe.“", "Grenzen"]], e: "Je mehr Bausteine, desto passender das Ergebnis." },
+        { t: "tf", q: "Wenn der erste Entwurf nicht passt, ist Prompting gescheitert.", a: false, e: "Iteration gehört dazu." }
+      ],
+      practice: {
+        task: "Verbessere diesen Prompt mit mindestens 4 Bausteinen: „Mach mir einen Probenplan.“",
+        hint: "Rolle, Kontext (Ensemble, Stücke, Termine), Aufgabe, Format, Grenzen.",
+        solution: "„Du bist erfahrener Ensembleleiter. Unser Blechbläserquintett probt 4× vor dem Konzert am 20.12. Programm: 5 Stücke (Liste folgt). Erstelle einen Probenplan als Tabelle (Datum, Dauer, Stücke, Schwerpunkt). Schwierige Stücke zuerst, Generalprobe am Ende mit Gesamtdurchlauf. Maximal 2,5 Std. pro Probe.“"
+      }
+    },
+    {
+      id: "z3l2",
+      title: "Zero-, One- und Few-Shot",
+      icon: "🎯",
+      lesson: `
+<p>„Shot“ heißt hier: <b>Beispiel</b>. Die Frage ist, wie viele Beispiele du der KI mitgibst.</p>
+<ul>
+<li><b>Zero-Shot:</b> Kein Beispiel, nur die Anweisung. Reicht für einfache, klare Aufgaben.<br><i>„Übersetze ins Englische: Die Probe beginnt um 19 Uhr.“</i></li>
+<li><b>One-Shot:</b> Ein Beispiel, das Format oder Stil zeigt.</li>
+<li><b>Few-Shot:</b> Mehrere Beispiele (meist 2–5). Ideal, wenn ein <b>bestimmter Stil, ein Format oder eine Einordnung</b> wichtig ist.</li>
+</ul>
+<div class="ex"><b>Few-Shot-Beispiel:</b><br>Ordne die Nachricht ein:<br>„Kann ich die Noten früher bekommen?“ → Organisation<br>„Die Gage ist noch nicht da.“ → Finanzen<br>„Wer spielt am Samstag Pauke?“ → Besetzung<br>„Wann ist die Anspielprobe?“ → ?</div>
+<p>Die KI erkennt das Muster und antwortet „Organisation“.</p>
+<h4>Tipps für gute Beispiele</h4>
+<ul>
+<li>Verschiedenartige Beispiele wählen, damit die KI das <b>Prinzip</b> lernt und nicht ein einzelnes Detail kopiert.</li>
+<li>Beispiele klar markieren, z. B. mit &lt;beispiel&gt; … &lt;/beispiel&gt;.</li>
+<li>Eigene echte Texte als Stilvorlage nutzen: „Schreibe so wie in diesen drei Mails von mir.“</li>
+</ul>`,
+      keys: [
+        "Zero = kein, One = ein, Few = mehrere Beispiele",
+        "Few-Shot für Stil, Format, Einordnung",
+        "Vielfältige Beispiele wählen"
+      ],
+      quiz: [
+        { t: "mc", q: "Du willst, dass die KI Mails genau in deinem Schreibstil formuliert. Welche Technik passt am besten?", o: ["Zero-Shot", "Few-Shot mit eigenen Beispiel-Mails", "Gar keinen Prompt", "Nur die Rolle angeben"], a: 1, e: "Beispiele zeigen Stil besser als jede Beschreibung." },
+        { t: "match", q: "Ordne zu.", p: [["Zero-Shot", "Nur Anweisung, kein Beispiel"], ["One-Shot", "Genau ein Beispiel"], ["Few-Shot", "Mehrere Beispiele"]], e: "„Shot“ = Beispiel." },
+        { t: "tf", q: "Bei Few-Shot sollten alle Beispiele möglichst gleich sein.", a: false, e: "Vielfalt hilft der KI, das Prinzip zu erkennen." }
+      ],
+      practice: {
+        task: "Baue einen Few-Shot-Prompt mit 3 Beispielen, der Rechnungsposten in Kategorien einordnet (z. B. Reise, Instrument, Noten).",
+        hint: "Format: Posten → Kategorie, dann ein offener Posten mit „?“.",
+        solution: "„Ordne zu: ‚Bahnticket Dresden‘ → Reise | ‚Paukenfelle‘ → Instrument | ‚Partitur Mahler 5‘ → Noten | ‚Hotel Leipzig‘ → ?“ (Antwort: Reise)"
+      }
+    },
+    {
+      id: "z3l3",
+      title: "Chain of Thought und Tree of Thought",
+      icon: "🌳",
+      lesson: `
+<h4>Chain of Thought (Gedankenkette)</h4>
+<p>Bei kniffligen Aufgaben wird das Ergebnis besser, wenn die KI <b>Schritt für Schritt denkt</b>, bevor sie antwortet, statt direkt ein Ergebnis hinzuschreiben.</p>
+<div class="ex">„Wir haben 3 Konzerte mit je 5 Musikern. Gage 250 € pro Person und Konzert, Fahrtkosten 80 € pro Konzert. <b>Rechne Schritt für Schritt</b> und nenne dann das Gesamtbudget.“</div>
+<p>Moderne Modelle haben oft einen eingebauten <b>Denkmodus</b> („Extended Thinking“ oder „Reasoning“). Dann denken sie automatisch länger nach. Bei Rechen-, Logik- und Planungsaufgaben lohnt sich das.</p>
+<h4>Tree of Thought (Gedankenbaum)</h4>
+<p>Hier soll die KI <b>mehrere Lösungswege parallel</b> durchdenken, sie bewerten und den besten weiterverfolgen, wie ein Baum mit Ästen.</p>
+<div class="ex">„Entwickle drei unterschiedliche Konzepte für unser Jubiläumskonzert. Bewerte jedes nach Kosten, Publikumswirkung und Aufwand. Empfiehl dann eines und begründe.“</div>
+<div class="tip">Chain of Thought = <b>ein</b> Weg, sorgfältig. Tree of Thought = <b>mehrere</b> Wege vergleichen. Beide kosten mehr Tokens, lohnen sich aber bei wichtigen Entscheidungen.</div>`,
+      keys: [
+        "Chain of Thought = Schritt für Schritt denken",
+        "Tree of Thought = mehrere Wege vergleichen",
+        "Denkmodus moderner Modelle für Logik und Planung"
+      ],
+      quiz: [
+        { t: "mc", q: "Welcher Zusatz löst klassisches Chain-of-Thought-Prompting aus?", o: ["„Antworte kurz.“", "„Denke Schritt für Schritt.“", "„Sei kreativ.“", "„Nutze Emojis.“"], a: 1, e: "Die Zwischenschritte machen Fehler seltener und sichtbar." },
+        { t: "mc", q: "Du willst drei Tourneerouten vergleichen und die beste wählen. Welche Technik passt?", o: ["Zero-Shot", "Tree of Thought", "One-Shot", "Keine"], a: 1, e: "Mehrere Wege bewerten, dann entscheiden." },
+        { t: "tf", q: "Ausführliches Nachdenken kostet mehr Tokens.", a: true, e: "Lohnt sich bei komplexen Aufgaben, nicht bei einfachen." }
+      ],
+      practice: {
+        task: "Schreibe einen Tree-of-Thought-Prompt für eine echte Entscheidung, die vor dir liegt.",
+        hint: "Mehrere Optionen + Bewertungskriterien + Empfehlung.",
+        solution: "„Ich überlege, wie ich mich auf ein Probespiel vorbereite. Entwickle 3 Übe-Strategien für die nächsten 6 Wochen. Bewerte jede nach Zeitaufwand, Wirkung auf Nervosität und Repertoire-Abdeckung (1–5). Empfiehl die beste und begründe.“"
+      }
+    },
+    {
+      id: "z3l4",
+      title: "Prompt Chaining",
+      icon: "⛓️",
+      lesson: `
+<p>Große Aufgaben in <b>einen</b> Riesen-Prompt zu packen, führt oft zu mittelmäßigen Ergebnissen. Beim <b>Prompt Chaining</b> zerlegst du die Aufgabe in <b>mehrere Schritte</b>. Das Ergebnis eines Schritts ist die Eingabe für den nächsten.</p>
+<div class="ex"><b>Beispiel: Newsletter für den Verein</b><br>
+1. Prompt: „Fasse diese 5 Protokolle in Stichpunkten zusammen.“<br>
+2. Prompt: „Wähle aus den Stichpunkten die 3 wichtigsten Themen für Mitglieder.“<br>
+3. Prompt: „Schreibe zu jedem Thema einen kurzen, freundlichen Absatz.“<br>
+4. Prompt: „Prüfe den Text auf Fehler und schlage eine Betreffzeile vor.“</div>
+<h4>Vorteile</h4>
+<ul>
+<li><b>Bessere Qualität:</b> Jeder Schritt hat eine klare, kleine Aufgabe.</li>
+<li><b>Kontrolle:</b> Du kannst zwischendurch prüfen und eingreifen.</li>
+<li><b>Fehlersuche:</b> Du siehst genau, welcher Schritt hakt.</li>
+<li><b>Automatisierbar:</b> In Make oder n8n wird jeder Schritt ein eigenes Modul.</li>
+</ul>
+<div class="tip">Ein Schritt „Prüfe das Ergebnis“ am Ende ist fast immer eine gute Idee. Die KI findet so viele eigene Fehler.</div>`,
+      keys: [
+        "Große Aufgabe → mehrere kleine Prompts",
+        "Ausgabe von Schritt 1 = Eingabe von Schritt 2",
+        "Mehr Qualität, Kontrolle und Automatisierbarkeit"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist Prompt Chaining?", o: ["Einen Prompt mehrmals senden", "Eine Aufgabe in Schritte zerlegen, die aufeinander aufbauen", "Prompts mit Ketten-Emojis", "Prompts an mehrere KIs gleichzeitig"], a: 1, e: "Wie ein Fließband für Gedankenarbeit." },
+        { t: "order", q: "Bringe die Kette für eine Konzertkritik-Auswertung in eine sinnvolle Reihenfolge.", o: ["Kritiken zusammenfassen", "Lob und Kritikpunkte herausfiltern", "Zitate für die Website auswählen", "Ergebnis auf Fehler prüfen"], e: "Erst sammeln, dann filtern, dann verwenden, dann prüfen." },
+        { t: "tf", q: "Prompt Chaining eignet sich gut für Automationen in n8n oder Make.", a: true, e: "Jeder Schritt wird ein Modul bzw. Node." }
+      ],
+      practice: {
+        task: "Zerlege die Aufgabe „Bewerbung für eine Orchesterstelle vorbereiten“ in eine Kette von 4 Prompts.",
+        hint: "Analyse → Planung → Text → Prüfung.",
+        solution: "1) „Analysiere diese Stellenausschreibung: Welche Anforderungen sind zentral?“ 2) „Gleiche sie mit meinem Lebenslauf ab: Stärken und Lücken?“ 3) „Schreibe ein Anschreiben, das die Stärken betont.“ 4) „Prüfe auf Länge, Tonfall und Fehler.“"
+      }
+    },
+    {
+      id: "z3l5",
+      title: "Modellwahl und Memory",
+      icon: "🧮",
+      lesson: `
+<h4>Das richtige Modell wählen</h4>
+<p>Anbieter haben meist mehrere Modell-Größen. Bei Anthropic gibt es z. B. größere, stärkere Modelle (wie <b>Opus</b>), ausgewogene (wie <b>Sonnet</b>) und schnelle, günstige (wie <b>Haiku</b>).</p>
+<ul>
+<li><b>Große Modelle:</b> komplexe Analysen, schwieriger Code, wichtige Texte. Langsamer und teurer.</li>
+<li><b>Mittlere Modelle:</b> der Alltags-Allrounder.</li>
+<li><b>Kleine Modelle:</b> einfache, massenhafte Aufgaben wie Einordnen, Extrahieren oder kurze Antworten. Schnell und günstig.</li>
+</ul>
+<div class="tip">Faustregel: So klein wie möglich, so groß wie nötig. In Automationen mit tausenden Durchläufen macht das einen großen Kostenunterschied.</div>
+<h4>Memory und Kontext</h4>
+<ul>
+<li><b>Kontextfenster:</b> Innerhalb eines Gesprächs „erinnert“ sich die KI an alles, was im Fenster Platz hat. Wird es voll, gehen frühe Details verloren oder werden zusammengefasst.</li>
+<li><b>Memory-Funktionen:</b> Manche Apps speichern wichtige Infos über dich <b>gesprächsübergreifend</b>, z. B. deinen Beruf oder deine Vorlieben.</li>
+<li><b>Projekte:</b> Du kannst Dokumente und Anweisungen dauerhaft für ein Thema hinterlegen.</li>
+</ul>
+<p>Lange, ausufernde Chats werden schlechter. Bei einem neuen Thema lieber einen <b>neuen Chat</b> beginnen.</p>`,
+      keys: [
+        "So klein wie möglich, so groß wie nötig",
+        "Kontextfenster = Kurzzeitgedächtnis",
+        "Memory und Projekte = Langzeitgedächtnis",
+        "Neues Thema = neuer Chat"
+      ],
+      quiz: [
+        { t: "mc", q: "Du willst 10.000 Kundenmails automatisch in 5 Kategorien sortieren. Welches Modell?", o: ["Das größte verfügbare", "Ein kleines, schnelles Modell", "Ein Bildmodell", "Egal"], a: 1, e: "Einfache Massenaufgabe → klein und günstig." },
+        { t: "tf", q: "Sehr lange Chats über viele Themen liefern meist bessere Ergebnisse.", a: false, e: "Der Kontext wird unübersichtlich. Neues Thema = neuer Chat." },
+        { t: "match", q: "Ordne zu.", p: [["Kontextfenster", "Gedächtnis innerhalb eines Gesprächs"], ["Memory-Funktion", "Merkt sich Infos über Gespräche hinweg"], ["Projekt", "Dauerhaft hinterlegte Dokumente und Anweisungen"]], e: "Diese Unterscheidung brauchst du später bei CLAUDE.md wieder." }
+      ],
+      practice: {
+        task: "Ordne drei deiner Aufgaben einer Modellgröße zu (groß, mittel, klein) und begründe kurz.",
+        hint: "Wie schwierig ist die Aufgabe, und wie oft kommt sie vor?",
+        solution: "Groß: Probespiel-Strategie oder Vertragsprüfung (wichtig, komplex). Mittel: Mails und Texte (Alltag). Klein: Belege kategorisieren (einfach, häufig)."
+      }
+    },
+    {
+      id: "z3l6",
+      title: "Eigene Assistenten nach Lastenheft",
+      icon: "🛠️",
+      lesson: `
+<p>Statt jedes Mal denselben langen Prompt zu tippen, baust du einen <b>eigenen Assistenten</b>. Bei ChatGPT heißen sie <b>Custom GPTs</b>, bei Claude nutzt du <b>Projekte</b> mit Anweisungen und Wissen, bei Gemini <b>Gems</b>.</p>
+<h4>Bestandteile</h4>
+<ul>
+<li><b>Systemanweisung:</b> Rolle, Aufgabe, Tonfall, Regeln, also das „Grundgesetz“ des Assistenten</li>
+<li><b>Wissen:</b> hochgeladene Dokumente</li>
+<li><b>Fähigkeiten:</b> z. B. Websuche oder Datenanalyse</li>
+</ul>
+<h4>Erst das Lastenheft</h4>
+<p>Bevor du baust, beantworte schriftlich:</p>
+<ol>
+<li><b>Zweck:</b> Welches Problem löst der Assistent?</li>
+<li><b>Nutzer:</b> Wer benutzt ihn, und wie viel Vorwissen haben diese Personen?</li>
+<li><b>Eingaben:</b> Was geben die Nutzer ein?</li>
+<li><b>Ausgaben:</b> Was soll herauskommen, in welchem Format?</li>
+<li><b>Wissen:</b> Welche Dokumente braucht er?</li>
+<li><b>Grenzen:</b> Was darf er nicht, z. B. Rechtsberatung geben?</li>
+<li><b>Erfolgskriterien:</b> Woran erkennst du, dass er gut ist?</li>
+</ol>
+<div class="tip">Teste deinen Assistenten mit <b>schwierigen Fällen</b>: unklare Fragen, Fragen außerhalb seines Themas, Versuche, ihn auszutricksen.</div>`,
+      keys: [
+        "Eigener Assistent = Systemanweisung + Wissen + Fähigkeiten",
+        "Erst Lastenheft, dann bauen",
+        "Mit schwierigen Fällen testen"
+      ],
+      quiz: [
+        { t: "mc", q: "Was gehört in die Systemanweisung eines eigenen Assistenten?", o: ["Nur der Name", "Rolle, Aufgabe, Tonfall und Regeln", "Die Kreditkartennummer", "Nichts, er lernt von allein"], a: 1, e: "Sie ist das Grundgesetz des Assistenten." },
+        { t: "order", q: "Sinnvolle Reihenfolge beim Bauen eines Assistenten:", o: ["Lastenheft schreiben", "Systemanweisung und Wissen hinterlegen", "Mit schwierigen Fällen testen", "Nachbessern und freigeben"], e: "Planen → Bauen → Testen → Verbessern." },
+        { t: "tf", q: "Ein guter Assistent sollte auch wissen, welche Fragen er nicht beantworten darf.", a: true, e: "Grenzen gehören ins Lastenheft." }
+      ],
+      practice: {
+        task: "Schreibe ein Mini-Lastenheft (Zweck, Nutzer, Ausgabe, Grenzen) für einen Assistenten, den du wirklich brauchen könntest.",
+        hint: "Zum Beispiel ein Vereins-FAQ-Bot oder ein Bewerbungs-Coach.",
+        solution: "Zweck: Fragen von Vereinsmitgliedern beantworten. Nutzer: Mitglieder ohne Technikwissen. Ausgabe: kurze, freundliche Antwort mit Verweis auf die Satzungsstelle. Grenzen: keine Rechtsberatung, bei Unklarheit an den Vorstand verweisen."
+      }
+    },
+    {
+      id: "z3l7",
+      title: "Daten, PDFs und Tabellen analysieren",
+      icon: "📊",
+      lesson: `
+<p>KI ist stark darin, <b>große Mengen an Text und Daten</b> zu durchforsten.</p>
+<h4>PDFs und Dokumente</h4>
+<ul>
+<li>Zusammenfassen: „Die 10 wichtigsten Punkte dieses Vertrags.“</li>
+<li>Gezielt fragen: „Was steht zu Kündigungsfristen? Zitiere die Stelle.“</li>
+<li>Vergleichen: „Was unterscheidet Vertrag A von Vertrag B?“</li>
+<li>Extrahieren: „Alle Termine als Tabelle mit Datum, Ort und Uhrzeit.“</li>
+</ul>
+<h4>Tabellen und Zahlen</h4>
+<p>Viele KI-Apps können <b>Code ausführen</b>, um Tabellen auszuwerten. Das ist viel zuverlässiger, als wenn das Modell im Kopf rechnet.</p>
+<ul>
+<li>„Lade die CSV-Datei mit meinen Einnahmen. Zeig mir die Summe pro Monat als Diagramm.“</li>
+<li>„Welche Konzerte hatten die höchsten Fahrtkosten im Verhältnis zur Gage?“</li>
+</ul>
+<h4>KI in Excel und Google Sheets</h4>
+<ul>
+<li>Formeln erklären oder erstellen lassen: „Schreib mir eine Formel, die alle Gagen über 500 € summiert.“</li>
+<li>Integrierte KI (Copilot in Excel, Gemini in Sheets) oder Add-ons, die Zellen per Prompt befüllen.</li>
+</ul>
+<div class="tip">Bei Zahlen gilt: Lass die KI <b>rechnen (Code)</b> statt <b>schätzen (Text)</b>, und prüfe die Ergebnisse stichprobenartig.</div>`,
+      keys: [
+        "PDFs: zusammenfassen, fragen, vergleichen, extrahieren",
+        "Zahlen per Code auswerten lassen",
+        "KI hilft bei Excel-Formeln"
+      ],
+      quiz: [
+        { t: "mc", q: "Warum sollte KI bei Tabellen-Auswertungen Code ausführen?", o: ["Weil es schöner aussieht", "Weil Code exakt rechnet, während Text-Antworten Zahlen schätzen können", "Weil es billiger ist", "Gar nicht nötig"], a: 1, e: "Rechnen per Code ist reproduzierbar und exakt." },
+        { t: "tf", q: "Du kannst eine KI bitten, eine bestimmte Stelle im Vertrag wörtlich zu zitieren, um die Antwort zu prüfen.", a: true, e: "Zitate machen Antworten überprüfbar." },
+        { t: "mc", q: "Welcher Prompt extrahiert Daten?", o: ["„Was hältst du von dem Vertrag?“", "„Liste alle Termine als Tabelle mit Datum, Ort und Uhrzeit.“", "„Ist der Vertrag gut?“", "„Schreib ein Gedicht über den Vertrag.“"], a: 1, e: "Extrahieren = strukturierte Daten herausziehen." }
+      ],
+      practice: {
+        task: "Formuliere einen Prompt, der aus einem Gastspielvertrag alle wichtigen Daten als Tabelle herauszieht.",
+        hint: "Welche Spalten brauchst du? Was, wenn etwas fehlt?",
+        solution: "„Extrahiere aus dem Vertrag: Datum, Ort, Anspielzeit, Gage, Zahlungsfrist, Stornoregel, Reisekosten. Gib eine Tabelle aus. Wenn ein Punkt fehlt, schreibe ‚nicht geregelt‘. Zitiere zu jedem Punkt die Fundstelle.“"
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z4",
+  title: "Praxis und Recht",
+  subtitle: "Echte Anwendungen, sicher umgesetzt",
+  icon: "⚖️",
+  color: "#ef4444",
+  badge: { name: "Praxis-Profi", icon: "🏗️" },
+  levels: [
+    {
+      id: "z4l1",
+      title: "Chatbots: Website, intern, SQL",
+      icon: "💁",
+      lesson: `
+<p>Chatbots sind der häufigste Einstieg in KI-Projekte. Drei Arten solltest du kennen:</p>
+<h4>1. Website-Chatbot</h4>
+<p>Beantwortet Fragen von Besuchern rund um die Uhr: Öffnungszeiten, Preise, Buchung. Oft gebaut mit <b>n8n</b> und RAG über die Website-Inhalte. Wichtig: klare Übergabe an einen Menschen, wenn der Bot nicht weiterweiß.</p>
+<h4>2. Interner Wissens-Bot (RAG)</h4>
+<p>Für Mitarbeitende: „Wie beantrage ich Urlaub?“, „Wo ist die Vorlage für Angebote?“. Er durchsucht Handbücher, Richtlinien und Wikis. Spart viele Rückfragen.</p>
+<h4>3. SQL-Chatbot</h4>
+<p>Viele Firmendaten liegen in <b>Datenbanken</b>. <b>SQL</b> ist die Sprache, um sie abzufragen. Ein SQL-Bot übersetzt eine normale Frage („Wie viele Tickets haben wir im Oktober verkauft?“) in eine Datenbankabfrage und erklärt das Ergebnis.</p>
+<div class="tip">SQL-Bots sollten nur <b>Lesezugriff</b> haben. Sonst könnte eine missverstandene Frage Daten löschen.</div>
+<h4>Weitere Kanäle</h4>
+<ul>
+<li><b>Slackbot für Reporting:</b> Schickt jeden Montag automatisch die Kennzahlen der Woche in einen Kanal.</li>
+<li><b>Sprach-Chatbot:</b> z. B. mit ElevenLabs, der Antworten vorliest. Mehr dazu in Zone 5.</li>
+</ul>`,
+      keys: [
+        "Website-Bot: Kundenfragen + Übergabe an Menschen",
+        "Interner RAG-Bot: Firmenwissen",
+        "SQL-Bot: Fragen → Datenbankabfragen, nur Lesezugriff"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne den Bot dem Einsatz zu.", p: [["Website-Bot", "Fragen von Besuchern beantworten"], ["Interner RAG-Bot", "Handbücher für Mitarbeitende durchsuchen"], ["SQL-Bot", "Fragen in Datenbankabfragen übersetzen"], ["Slackbot", "Wöchentliche Kennzahlen posten"]], e: "Gleiche Technik, verschiedene Zielgruppen." },
+        { t: "mc", q: "Welche Rechte sollte ein SQL-Chatbot haben?", o: ["Volle Schreib- und Löschrechte", "Nur Lesezugriff", "Admin-Rechte", "Keine, er rät einfach"], a: 1, e: "Prinzip der minimalen Rechte." },
+        { t: "tf", q: "Ein guter Website-Bot sollte an einen Menschen übergeben können.", a: true, e: "Frust vermeiden, Vertrauen aufbauen." }
+      ],
+      practice: {
+        task: "Welche 5 Fragen würde ein Website-Bot für dein Ensemble am häufigsten beantworten müssen?",
+        hint: "Was fragen Veranstalter, Publikum oder Presse?",
+        solution: "Beispiel: Wie buche ich euch? Was kostet ein Auftritt? Welches Programm spielt ihr? Wie viel Platz braucht ihr auf der Bühne? Wo finde ich Pressefotos?"
+      }
+    },
+    {
+      id: "z4l2",
+      title: "Corporate LLM und lokale KI",
+      icon: "🏢",
+      lesson: `
+<p>Viele Firmen wollen KI nutzen, ohne sensible Daten an fremde Server zu schicken. Dafür gibt es mehrere Wege:</p>
+<h4>Corporate LLM</h4>
+<p>Ein <b>firmeneigener KI-Chat</b>, z. B. mit <b>OpenWebUI</b>, einer Chat-Oberfläche wie ChatGPT, die man selbst hostet. Im Hintergrund laufen entweder:</p>
+<ul>
+<li><b>Cloud-Modelle über API</b> mit Unternehmensvertrag. Daten werden in der Regel nicht zum Training genutzt.</li>
+<li><b>Lokale Open-Source-Modelle</b> auf eigener Hardware, z. B. über <b>Ollama</b>. Die Daten verlassen das Haus nie.</li>
+</ul>
+<h4>Vorteile</h4>
+<ul>
+<li>Zentrale Kontrolle: Wer darf was? Welche Modelle sind erlaubt?</li>
+<li>Keine „Schatten-KI“, also Mitarbeitende, die heimlich private Konten nutzen</li>
+<li>Kosten pro Nutzer statt teurer Einzel-Abos</li>
+</ul>
+<h4>Lokale Dokumentenanalyse</h4>
+<p>Besonders sensible Unterlagen wie Personalakten, Verträge oder Gesundheitsdaten lassen sich mit lokalen Modellen analysieren, ganz ohne Internet.</p>
+<div class="tip">Lokale Modelle sind meist <b>schwächer</b> als die besten Cloud-Modelle und brauchen gute Hardware. Abwägung: Datenschutz gegen Leistung.</div>`,
+      keys: [
+        "Corporate LLM = eigener KI-Chat fürs Unternehmen",
+        "OpenWebUI = Oberfläche, Ollama = lokale Modelle",
+        "Lokal = maximaler Datenschutz, oft weniger Leistung"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist „Schatten-KI“?", o: ["KI im Dunkelmodus", "Mitarbeitende nutzen ohne Freigabe private KI-Konten für Firmendaten", "Ein Bildmodell", "Eine Sicherheitssoftware"], a: 1, e: "Ein Corporate LLM schafft eine erlaubte Alternative." },
+        { t: "match", q: "Ordne zu.", p: [["OpenWebUI", "Selbst gehostete Chat-Oberfläche"], ["Ollama", "Lokale Modelle auf eigener Hardware ausführen"], ["Cloud-API", "Modell beim Anbieter, per Vertrag genutzt"]], e: "Oberfläche und Modell sind getrennte Bausteine." },
+        { t: "tf", q: "Lokale Modelle sind immer leistungsfähiger als Cloud-Modelle.", a: false, e: "Meist ist es umgekehrt. Der Vorteil lokaler Modelle ist der Datenschutz." }
+      ],
+      practice: {
+        task: "Welche deiner Daten würdest du nur lokal analysieren lassen und welche dürften in eine Cloud-KI? Nenne je 2.",
+        hint: "Denk an Personenbezug und Vertraulichkeit.",
+        solution: "Lokal: Gesundheitsunterlagen, Mitgliederliste mit Bankdaten. Cloud (mit seriösem Anbieter): Programmhefttexte, öffentliche Ausschreibungen."
+      }
+    },
+    {
+      id: "z4l3",
+      title: "Vertrieb automatisieren",
+      icon: "📈",
+      lesson: `
+<p>Im Vertrieb gibt es viele wiederkehrende Abläufe. Hier spielt KI ihre Stärken aus.</p>
+<h4>Lead-Qualifizierung</h4>
+<p>Ein <b>Lead</b> ist eine Anfrage oder ein potenzieller Kunde. KI kann eingehende Anfragen automatisch bewerten: Passt das Budget? Ist das Datum frei? Wie dringend ist es? Dann wird sortiert in heiß, warm und kalt.</p>
+<h4>Automatisierte Angebote</h4>
+<div class="ex">Anfrage per Formular → KI liest die Wünsche (Datum, Besetzung, Ort) → prüft den Kalender → berechnet den Preis nach deiner Preisliste → erstellt ein Angebot als PDF → <b>du prüfst und gibst frei</b> → Versand.</div>
+<h4>Outbound-Mails</h4>
+<p><b>Outbound</b> heißt: Du gehst aktiv auf mögliche Kunden zu. KI kann Mails personalisieren, z. B. mit Bezug auf die letzte Konzertsaison des Veranstalters.</p>
+<div class="tip">Achtung, Recht: Werbe-Mails ohne Einwilligung sind in Deutschland bei Privatpersonen verboten und auch gegenüber Firmen nur eingeschränkt erlaubt (UWG). Massenhaft unpersönliche KI-Mails schaden zudem dem Ruf.</div>
+<h4>Reporting</h4>
+<p>Automatische Wochenberichte: Anfragen, Angebote, Zusagen und Umsatz, als Nachricht in Slack oder per Mail.</p>`,
+      keys: [
+        "Lead = potenzieller Kunde; KI bewertet und sortiert",
+        "Angebote automatisch erstellen, Mensch gibt frei",
+        "Outbound: Recht (UWG) beachten"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist ein Lead?", o: ["Ein Bleistift", "Eine Anfrage oder ein potenzieller Kunde", "Ein KI-Modell", "Ein Vertrag"], a: 1, e: "Leads werden qualifiziert, also bewertet." },
+        { t: "order", q: "Bringe den Angebotsprozess in die richtige Reihenfolge.", o: ["Anfrage kommt per Formular", "KI liest Wünsche und prüft Kalender", "KI erstellt Angebot nach Preisliste", "Mensch prüft und gibt frei", "Versand"], e: "Der Mensch bleibt vor dem Versand in der Schleife." },
+        { t: "tf", q: "Werbe-Mails an Privatpersonen ohne Einwilligung sind in Deutschland erlaubt, wenn eine KI sie schreibt.", a: false, e: "Die Regeln gelten unabhängig davon, wer die Mail schreibt." }
+      ],
+      practice: {
+        task: "Entwirf Kriterien, nach denen eine KI Konzertanfragen in heiß, warm und kalt sortieren soll.",
+        hint: "Budget, Termin, Ort, Vollständigkeit der Anfrage …",
+        solution: "Heiß: Budget passt, Termin frei, alle Infos da. Warm: Termin frei, Budget unklar. Kalt: Budget deutlich zu niedrig oder Termin belegt. Zusatz: unvollständige Anfragen bekommen automatisch eine Rückfrage."
+      }
+    },
+    {
+      id: "z4l4",
+      title: "DSGVO und KI",
+      icon: "🔒",
+      lesson: `
+<p>Die <b>DSGVO</b> (Datenschutz-Grundverordnung) gilt immer, wenn <b>personenbezogene Daten</b> verarbeitet werden, also alles, was sich einer Person zuordnen lässt: Name, Mail, Telefonnummer, Stimme, Foto.</p>
+<h4>Die wichtigsten Fragen</h4>
+<ul>
+<li><b>Rechtsgrundlage:</b> Darf ich die Daten verarbeiten, z. B. mit Einwilligung, zur Vertragserfüllung oder aus berechtigtem Interesse?</li>
+<li><b>Datenminimierung:</b> Nur die Daten an die KI geben, die wirklich nötig sind. Oft lassen sich Namen schwärzen oder ersetzen (<b>Pseudonymisierung</b>).</li>
+<li><b>AVV:</b> Mit jedem Dienstleister, der Daten in deinem Auftrag verarbeitet, brauchst du einen <b>Auftragsverarbeitungsvertrag</b>.</li>
+<li><b>Serverstandort:</b> Daten in der EU sind einfacher. Für die USA braucht es zusätzliche Garantien, z. B. eine Zertifizierung nach dem EU-US Data Privacy Framework.</li>
+<li><b>Training:</b> Werden meine Eingaben zum Training genutzt? Bei Business-Tarifen und APIs meist nicht. Das muss man aber prüfen.</li>
+<li><b>Transparenz:</b> Betroffene informieren, z. B. in der Datenschutzerklärung.</li>
+</ul>
+<div class="tip">Keine Gesundheitsdaten, Bankdaten oder vertraulichen Personalinfos in private KI-Konten kopieren!</div>
+<p><i>Hinweis: Diese App ersetzt keine Rechtsberatung. Bei konkreten Projekten Datenschutzbeauftragte oder Fachanwälte fragen.</i></p>`,
+      keys: [
+        "DSGVO gilt bei personenbezogenen Daten",
+        "Rechtsgrundlage, Datenminimierung, AVV",
+        "Serverstandort und Trainingsnutzung prüfen"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist ein AVV?", o: ["Ein KI-Modell", "Ein Auftragsverarbeitungsvertrag mit einem Dienstleister", "Eine Abkürzung für Automatisierung", "Ein Verein"], a: 1, e: "Pflicht, wenn ein Dienstleister personenbezogene Daten für dich verarbeitet." },
+        { t: "tf", q: "Eine Stimmaufnahme kann ein personenbezogenes Datum sein.", a: true, e: "Wichtig für Voice Agents in Zone 5." },
+        { t: "mc", q: "Was bedeutet Datenminimierung?", o: ["Daten komprimieren", "Nur die nötigsten Daten verarbeiten", "Daten löschen, sobald die KI antwortet", "Kleine Schriftgröße"], a: 1, e: "Z. B. Namen vor dem Hochladen ersetzen." },
+        { t: "tf", q: "Bei Business-Tarifen sollte man trotzdem prüfen, ob Eingaben zum Training genutzt werden.", a: true, e: "Immer in den Bedingungen nachlesen." }
+      ],
+      practice: {
+        task: "Du willst Mitgliederanfragen per KI beantworten lassen. Schreibe eine Datenschutz-Checkliste mit 4 Punkten.",
+        hint: "Rechtsgrundlage, Anbieter, Daten, Information.",
+        solution: "1) Anbieter mit AVV und EU-Servern oder gleichwertigen Garantien wählen. 2) Training mit unseren Daten ausschließen. 3) Nur nötige Daten übergeben, Bankdaten nie. 4) Datenschutzerklärung ergänzen und Mitglieder informieren."
+      }
+    },
+    {
+      id: "z4l5",
+      title: "Der EU AI Act",
+      icon: "🇪🇺",
+      lesson: `
+<p>Der <b>EU AI Act</b> (KI-Verordnung) ist das erste umfassende KI-Gesetz der Welt. Er ist seit August 2024 in Kraft und wird <b>schrittweise</b> anwendbar. Er ordnet KI nach <b>Risiko</b>:</p>
+<ul>
+<li><b>Unannehmbares Risiko, verboten:</b> z. B. Social Scoring durch Behörden, manipulative KI oder Emotionserkennung am Arbeitsplatz. Diese Verbote gelten seit Februar 2025.</li>
+<li><b>Hohes Risiko, strenge Pflichten:</b> z. B. KI bei Bewerberauswahl, Kreditvergabe oder in der Bildung. Hier braucht es Risikomanagement, Dokumentation und menschliche Aufsicht.</li>
+<li><b>Begrenztes Risiko, Transparenz:</b> z. B. Chatbots und KI-generierte Inhalte. Menschen müssen erkennen können, dass sie mit KI sprechen oder dass ein Inhalt künstlich erzeugt ist.</li>
+<li><b>Minimales Risiko:</b> z. B. Spamfilter. Keine besonderen Pflichten.</li>
+</ul>
+<h4>KI-Kompetenz</h4>
+<p>Seit Februar 2025 sollen Unternehmen, die KI einsetzen, dafür sorgen, dass ihre Leute <b>ausreichend KI-Kompetenz</b> haben (Art. 4). Genau dafür gibt es Schulungen wie den KI-Manager.</p>
+<h4>Aktueller Zeitplan (Stand Herbst 2026)</h4>
+<p>Mit dem <b>„Digital Omnibus“</b> hat die EU 2026 einige Fristen verschoben:</p>
+<ul>
+<li>Pflichten für Anbieter großer KI-Modelle (GPAI): seit August 2025</li>
+<li>Kennzeichnung KI-generierter Inhalte (Wasserzeichen): ab 2. Dezember 2026</li>
+<li>Hochrisiko-Systeme (Anhang III): ab 2. Dezember 2027</li>
+<li>Hochrisiko-KI in regulierten Produkten: ab August 2028</li>
+</ul>
+<div class="tip">Merksatz: Je höher das Risiko für Menschen, desto strenger die Regeln.</div>`,
+      keys: [
+        "Risikopyramide: verboten → hoch → begrenzt → minimal",
+        "Chatbots müssen sich als KI zu erkennen geben",
+        "KI-Kompetenzpflicht seit Feb. 2025",
+        "Hochrisiko-Pflichten auf Dez. 2027 verschoben"
+      ],
+      quiz: [
+        { t: "order", q: "Ordne die Risikoklassen von streng nach locker.", o: ["Unannehmbares Risiko (verboten)", "Hohes Risiko", "Begrenztes Risiko", "Minimales Risiko"], e: "Je höher das Risiko, desto strenger die Regeln." },
+        { t: "match", q: "Ordne das Beispiel der Risikoklasse zu.", p: [["Social Scoring durch Behörden", "Verboten"], ["KI sortiert Bewerbungen", "Hohes Risiko"], ["Website-Chatbot", "Begrenztes Risiko"], ["Spamfilter", "Minimales Risiko"]], e: "Bewerberauswahl ist ein klassischer Hochrisiko-Fall." },
+        { t: "tf", q: "Ein Chatbot muss erkennbar machen, dass man mit einer KI spricht.", a: true, e: "Transparenzpflicht." },
+        { t: "mc", q: "Was hat der „Digital Omnibus“ 2026 am AI Act geändert?", o: ["Er hat den AI Act abgeschafft", "Er hat u. a. die Hochrisiko-Pflichten auf Dezember 2027 verschoben", "Er hat alle KI verboten", "Nichts"], a: 1, e: "Der AI Act gilt weiter, nur der Zeitplan wurde angepasst." }
+      ],
+      practice: {
+        task: "Ordne drei KI-Ideen aus deinem Umfeld einer Risikoklasse zu.",
+        hint: "Geht es um wichtige Entscheidungen über Menschen? Spricht die KI mit Menschen?",
+        solution: "Beispiel: KI-Vorauswahl von Bewerbern für eine Akademie → hohes Risiko. FAQ-Chatbot auf der Vereinsseite → begrenztes Risiko (Hinweis „Ich bin eine KI“). KI sortiert Noten-PDFs → minimales Risiko."
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z5",
+  title: "Voice Agents",
+  subtitle: "KI, die telefoniert",
+  icon: "📞",
+  color: "#ec4899",
+  badge: { name: "Stimmgewaltig", icon: "🎙️" },
+  levels: [
+    {
+      id: "z5l1",
+      title: "Wie ein Voice Agent funktioniert",
+      icon: "🗣️",
+      lesson: `
+<p>Ein <b>Voice Agent</b> ist ein KI-Agent, der <b>per Sprache</b> kommuniziert, meist am Telefon. Er nimmt Anrufe an, beantwortet Fragen, bucht Termine oder ruft selbst an.</p>
+<h4>Die drei Bausteine</h4>
+<ol>
+<li><b>STT</b> (Speech-to-Text): Die Stimme des Anrufers wird in Text umgewandelt.</li>
+<li><b>LLM:</b> Das Sprachmodell versteht den Text, entscheidet und formuliert eine Antwort. Bei Bedarf ruft es Tools auf, z. B. den Kalender.</li>
+<li><b>TTS</b> (Text-to-Speech): Die Antwort wird in natürliche Sprache umgewandelt, z. B. mit ElevenLabs.</li>
+</ol>
+<p>Daneben gibt es neuere <b>Speech-to-Speech</b>-Modelle, die Audio direkt verarbeiten.</p>
+<h4>Die große Herausforderung: Latenz</h4>
+<p><b>Latenz</b> ist die Verzögerung zwischen Frage und Antwort. Im Telefonat wirken schon über 1 Sekunde Pause unnatürlich. Deshalb sind schnelle Modelle und gute Plattformen entscheidend.</p>
+<p>Weitere Feinheiten: <b>Unterbrechungen</b> (der Anrufer redet dazwischen), <b>Hintergrundgeräusche</b>, Dialekte und das Erkennen, wann jemand fertig gesprochen hat.</p>
+<div class="tip">Ein Voice Agent ist im Kern dasselbe wie ein Chatbot, nur mit Ohren (STT) und Mund (TTS).</div>`,
+      keys: [
+        "STT → LLM → TTS",
+        "Latenz ist der kritische Faktor",
+        "Unterbrechungen und Geräusche meistern"
+      ],
+      quiz: [
+        { t: "order", q: "Bringe den Ablauf eines Voice Agents in die richtige Reihenfolge.", o: ["Anrufer spricht", "STT wandelt Sprache in Text", "LLM versteht und formuliert Antwort", "TTS wandelt Antwort in Sprache"], e: "Ohren → Gehirn → Mund." },
+        { t: "mc", q: "Was ist Latenz?", o: ["Die Lautstärke", "Die Verzögerung zwischen Frage und Antwort", "Der Preis pro Minute", "Die Stimmfarbe"], a: 1, e: "Zu lange Pausen wirken unnatürlich." },
+        { t: "match", q: "Ordne zu.", p: [["STT", "Sprache → Text"], ["TTS", "Text → Sprache"], ["LLM", "Verstehen und Antworten"]], e: "Die drei Grundbausteine." }
+      ],
+      practice: {
+        task: "Für welchen Anruf-Typ in deinem Umfeld wäre ein Voice Agent sinnvoll und wo wäre er unpassend?",
+        hint: "Routineanfragen vs. heikle Gespräche.",
+        solution: "Sinnvoll: Kartenvorverkauf-Hotline (Termine, Preise, Anfahrt). Unpassend: Absage eines Engagements oder sensible Personalgespräche, dort gehört ein Mensch ans Telefon."
+      }
+    },
+    {
+      id: "z5l2",
+      title: "Plattformen und Telefonie",
+      icon: "📡",
+      lesson: `
+<p>Niemand baut Voice Agents komplett von null. Es gibt Plattformen, die die Bausteine zusammenfügen.</p>
+<h4>Voice-Plattformen</h4>
+<ul>
+<li><b>Vapi:</b> Sehr flexibel, für Entwickler und Automatisierer. Modelle, Stimmen und Tools lassen sich frei kombinieren.</li>
+<li><b>ElevenLabs:</b> Bekannt für sehr natürliche Stimmen, bietet auch komplette Conversational-AI-Agenten.</li>
+<li><b>Fonio:</b> Lösung aus dem deutschsprachigen Raum, einfach für Unternehmen, Fokus auf DSGVO.</li>
+</ul>
+<h4>Telefonie-Anbieter</h4>
+<p>Damit der Agent eine echte Rufnummer hat, braucht es einen Telefonie-Anbieter wie <b>Twilio</b> oder <b>Telnyx</b>. Dort kauft man Rufnummern und verbindet sie mit der Plattform.</p>
+<ul>
+<li><b>SIP</b> (Session Initiation Protocol): Der technische Standard für Internet-Telefonie. Über einen <b>SIP-Trunk</b> lässt sich auch eine bestehende Firmen-Telefonanlage anbinden.</li>
+<li><b>Routing:</b> Regeln, wohin ein Anruf geht, z. B. „Bei Stichwort ‚Reklamation‘ an einen Menschen weiterleiten“.</li>
+</ul>
+<h4>Daten und Logik</h4>
+<p><b>Supabase</b> (Datenbank) speichert Kunden und Gesprächsdaten. <b>Make oder n8n</b> verbinden den Agenten mit Kalender, CRM und Mail.</p>`,
+      keys: [
+        "Plattformen: Vapi, ElevenLabs, Fonio",
+        "Telefonie: Twilio, Telnyx, Rufnummern",
+        "SIP = Standard für Internet-Telefonie; Routing = Weiterleitungsregeln"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne zu.", p: [["Twilio / Telnyx", "Rufnummern und Telefonie"], ["ElevenLabs", "Natürliche KI-Stimmen"], ["Supabase", "Datenbank"], ["SIP", "Standard für Internet-Telefonie"]], e: "Ein Voice Agent ist ein Zusammenspiel vieler Dienste." },
+        { t: "mc", q: "Was regelt das Routing?", o: ["Die Stimmfarbe", "Wohin ein Anruf weitergeleitet wird", "Den Preis", "Die Sprache"], a: 1, e: "Z. B. Übergabe an einen Menschen." },
+        { t: "tf", q: "Über einen SIP-Trunk kann eine bestehende Telefonanlage angebunden werden.", a: true, e: "So muss die Firma keine neue Nummer kommunizieren." }
+      ],
+      practice: {
+        task: "Skizziere den Technik-Stack für einen Vorverkaufs-Voice-Agent: Welcher Dienst übernimmt welche Aufgabe?",
+        hint: "Nummer, Plattform, Stimme, Daten, Automation.",
+        solution: "Rufnummer: Telnyx. Plattform: Vapi. Stimme: ElevenLabs. Daten: Supabase (Veranstaltungen, Kontingente). Automation: n8n schickt die Buchungsbestätigung per Mail."
+      }
+    },
+    {
+      id: "z5l3",
+      title: "Inbound, Outbound und Planung",
+      icon: "🔀",
+      lesson: `
+<h4>Inbound</h4>
+<p><b>Eingehende</b> Anrufe: Der Kunde ruft an. Typisch sind Hotlines, Terminbuchung, Bestellannahme oder Erstberatung. Vorteil: Rund um die Uhr erreichbar, keine Warteschleife.</p>
+<h4>Outbound</h4>
+<p><b>Ausgehende</b> Anrufe: Der Agent ruft an. Typisch sind Terminerinnerungen, Feedback-Umfragen oder Rückrufe. Rechtlich heikler: Werbeanrufe bei Privatpersonen brauchen in Deutschland eine <b>ausdrückliche vorherige Einwilligung</b>.</p>
+<h4>Planung mit Lastenheft</h4>
+<p>Wie in Zone 1: Erst planen, dann bauen. Für Voice Agents besonders wichtig:</p>
+<ul>
+<li><b>Gesprächsziel:</b> Was soll am Ende des Anrufs erreicht sein?</li>
+<li><b>Gesprächsfluss:</b> Begrüßung → Anliegen erfragen → Daten sammeln → Aktion → Abschluss.</li>
+<li><b>Prozessvisualisierung:</b> Den Ablauf als Flussdiagramm mit allen Verzweigungen zeichnen.</li>
+<li><b>Sonderfälle:</b> Was, wenn der Anrufer wütend ist, etwas Unbekanntes fragt oder einen Menschen verlangt?</li>
+<li><b>Persönlichkeit:</b> Name, Tonfall, Sprechtempo, Du oder Sie.</li>
+</ul>
+<div class="tip">Der Agent sollte sich am Anfang als KI vorstellen. Das ist ehrlich und durch den AI Act ohnehin Pflicht.</div>`,
+      keys: [
+        "Inbound = eingehend, Outbound = ausgehend",
+        "Outbound-Werbung an Privatpersonen nur mit Einwilligung",
+        "Gesprächsfluss und Sonderfälle vorher planen"
+      ],
+      quiz: [
+        { t: "mc", q: "Eine Arztpraxis lässt Patienten ihre Termine per KI-Telefon buchen. Das ist …", o: ["Outbound", "Inbound", "Beides nicht", "Ein SQL-Bot"], a: 1, e: "Der Patient ruft an, also eingehend." },
+        { t: "order", q: "Bringe den typischen Gesprächsfluss in die richtige Reihenfolge.", o: ["Begrüßung (als KI vorstellen)", "Anliegen erfragen", "Daten sammeln", "Aktion ausführen (z. B. buchen)", "Abschluss und Verabschiedung"], e: "Ein klarer Ablauf macht den Agenten zuverlässig." },
+        { t: "tf", q: "Werbeanrufe bei Privatpersonen sind in Deutschland ohne Einwilligung erlaubt.", a: false, e: "Es braucht eine ausdrückliche vorherige Einwilligung." }
+      ],
+      practice: {
+        task: "Schreibe die Begrüßung und die erste Frage für einen Inbound-Agenten deines Ensembles.",
+        hint: "Als KI vorstellen, freundlich, Anliegen erfragen.",
+        solution: "„Guten Tag, hier ist Lina, die digitale Assistentin unseres Ensembles. Ich bin eine KI und helfe Ihnen gern bei Buchungsanfragen und Fragen zu unseren Konzerten. Worum geht es bei Ihnen?“"
+      }
+    },
+    {
+      id: "z5l4",
+      title: "Tools: Termine, Kundenerkennung, Reports",
+      icon: "🧰",
+      lesson: `
+<p>Richtig nützlich wird ein Voice Agent erst, wenn er <b>handeln</b> kann. Dafür bekommt er <b>Tools</b> (auch <b>Function Calling</b> genannt): Funktionen, die er während des Gesprächs aufrufen darf.</p>
+<h4>Wichtige Tools</h4>
+<ul>
+<li><b>Terminbuchung:</b> Freie Slots im Kalender abfragen, z. B. per Calendly oder Google Calendar, und den Termin eintragen.</li>
+<li><b>Kundenerkennung:</b> Anhand der Telefonnummer in der Datenbank nachsehen: „Willkommen zurück, Frau Müller!“</li>
+<li><b>Weiterleitung:</b> An einen Menschen übergeben.</li>
+<li><b>Daten speichern:</b> Anliegen ins CRM schreiben.</li>
+</ul>
+<h4>End-of-Call-Report</h4>
+<p>Nach jedem Anruf schickt die Plattform automatisch einen <b>Bericht</b> per Webhook: Zusammenfassung, Transkript, Dauer, Ergebnis. Den kann n8n z. B. als Ticket anlegen oder an das Team schicken.</p>
+<h4>Sicherheit: HMAC</h4>
+<p>Wie weißt du, dass ein Webhook wirklich von deiner Plattform kommt und nicht von einem Angreifer? Mit einer <b>HMAC-Signatur</b>: Absender und Empfänger teilen ein geheimes Passwort. Jede Nachricht bekommt damit eine Art Siegel. Stimmt das Siegel nicht, wird die Nachricht verworfen.</p>
+<h4>Cloud-Bausteine</h4>
+<p>Bei großen Systemen kommen Dienste wie <b>AWS Lambda</b> (kleine Funktionen in der Cloud), <b>S3</b> (Dateispeicher, z. B. für Aufnahmen) und <b>SQS</b> (Warteschlange, damit bei vielen Anrufen nichts verloren geht) dazu.</p>`,
+      keys: [
+        "Tools/Function Calling = Agent kann handeln",
+        "End-of-Call-Report per Webhook",
+        "HMAC = Siegel, das die Echtheit eines Webhooks prüft"
+      ],
+      quiz: [
+        { t: "mc", q: "Wozu dient eine HMAC-Signatur bei Webhooks?", o: ["Sie macht die Nachricht schneller", "Sie beweist, dass die Nachricht vom echten Absender stammt und unverändert ist", "Sie übersetzt die Nachricht", "Sie komprimiert Audio"], a: 1, e: "Ein gemeinsames Geheimnis erzeugt ein Siegel." },
+        { t: "match", q: "Ordne zu.", p: [["End-of-Call-Report", "Zusammenfassung nach dem Anruf"], ["Function Calling", "Agent ruft Tools auf"], ["S3", "Dateispeicher in der Cloud"], ["SQS", "Warteschlange für Nachrichten"]], e: "Diese Bausteine machen Voice Agents produktionsreif." },
+        { t: "tf", q: "Ein Agent kann anhand der Telefonnummer erkennen, ob jemand schon Kunde ist.", a: true, e: "Kundenerkennung per Datenbank-Abfrage." }
+      ],
+      practice: {
+        task: "Welche 3 Tools bräuchte ein Agent, der Probentermine mit Musikern abstimmt?",
+        hint: "Was muss er nachsehen, eintragen und mitteilen?",
+        solution: "1) Kalender abfragen (freie Termine). 2) Termin eintragen. 3) Bestätigung per SMS oder Mail senden. Optional: 4) Bei Konflikt an den Ensembleleiter weiterleiten."
+      }
+    },
+    {
+      id: "z5l5",
+      title: "Datenschutz bei Voice Agents",
+      icon: "🛡️",
+      lesson: `
+<p>Stimmen und Gespräche sind <b>personenbezogene Daten</b>. Deshalb gelten bei Voice Agents besonders strenge Regeln.</p>
+<h4>Checkliste</h4>
+<ul>
+<li><b>Transparenz:</b> Zu Beginn sagen, dass eine KI spricht und ob aufgezeichnet wird.</li>
+<li><b>Aufzeichnung:</b> Gespräche nur mit Einwilligung aufnehmen. Heimliche Aufnahmen sind in Deutschland sogar strafbar (§ 201 StGB).</li>
+<li><b>AVV:</b> Mit allen Dienstleistern abschließen: Voice-Plattform, Telefonie, Stimm-Anbieter, Datenbank.</li>
+<li><b>Speicherdauer:</b> Festlegen, wie lange Transkripte und Aufnahmen gespeichert werden, und danach löschen.</li>
+<li><b>Serverstandort:</b> EU bevorzugen, sonst Garantien prüfen.</li>
+<li><b>Sensible Daten:</b> Keine Gesundheits- oder Kontodaten abfragen, wenn es nicht unbedingt nötig ist.</li>
+<li><b>Outbound:</b> Werbeanrufe nur mit vorheriger Einwilligung.</li>
+<li><b>Stimmklone:</b> Die Stimme einer echten Person nur mit deren ausdrücklicher Zustimmung nachbilden.</li>
+</ul>
+<div class="tip">Ein guter Voice Agent ist nicht nur technisch sauber, sondern auch <b>vertrauenswürdig</b>. Das ist am Ende ein Wettbewerbsvorteil.</div>`,
+      keys: [
+        "Als KI vorstellen, Aufzeichnung nur mit Einwilligung",
+        "AVV mit allen Dienstleistern",
+        "Speicherdauer festlegen, Stimmklone nur mit Zustimmung"
+      ],
+      quiz: [
+        { t: "tf", q: "Ein Voice Agent darf Gespräche heimlich aufzeichnen, solange die Daten in der EU bleiben.", a: false, e: "Aufzeichnung braucht Einwilligung. Heimliche Aufnahmen sind strafbar." },
+        { t: "mc", q: "Mit wem braucht man einen AVV?", o: ["Nur mit dem Telefonanbieter", "Mit allen Dienstleistern, die personenbezogene Daten verarbeiten", "Mit niemandem", "Nur mit Kunden"], a: 1, e: "Plattform, Telefonie, Stimme, Datenbank …" },
+        { t: "tf", q: "Die Stimme einer echten Person darf man ohne ihre Zustimmung klonen.", a: false, e: "Das braucht eine ausdrückliche Zustimmung." }
+      ],
+      practice: {
+        task: "Schreibe einen datenschutzfreundlichen Gesprächseinstieg mit Hinweis auf KI und Aufzeichnung.",
+        hint: "KI-Hinweis + Aufzeichnung + Wahlmöglichkeit.",
+        solution: "„Hallo, Sie sprechen mit der KI-Assistentin des Vereins. Zur Qualitätssicherung würde ich das Gespräch gern aufzeichnen. Sind Sie damit einverstanden? Sie können auch jederzeit ‚Mitarbeiter‘ sagen, dann verbinde ich Sie.“"
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z6",
+  title: "Ausblick und Business",
+  subtitle: "Zukunft, Ethik und Geld verdienen mit KI",
+  icon: "🔭",
+  color: "#14b8a6",
+  badge: { name: "Visionär", icon: "🌅" },
+  levels: [
+    {
+      id: "z6l1",
+      title: "Zukunft der Arbeit und Ethik",
+      icon: "🌍",
+      lesson: `
+<p>Im KI-Manager-Kurs kommen Forschende zu Wort, z. B. aus den Bereichen <b>Deep Learning</b>, <b>Digital Engineering</b>, <b>Maschinenethik</b> und <b>Zukunftsforschung</b>. Hier sind die großen Themen, um die es dabei geht.</p>
+<h4>Arbeitswelt</h4>
+<ul>
+<li>KI verändert vor allem <b>Aufgaben</b>, weniger ganze Berufe auf einen Schlag.</li>
+<li>Gefragt sind Menschen, die <b>Fachwissen und KI-Kompetenz verbinden</b>.</li>
+<li>Lebenslanges Lernen wird Normalität.</li>
+</ul>
+<h4>Ethische Fragen</h4>
+<ul>
+<li><b>Verantwortung:</b> Wer haftet, wenn eine KI-Entscheidung Schaden anrichtet?</li>
+<li><b>Fairness:</b> KI lernt aus Daten. Enthalten diese Vorurteile (<b>Bias</b>), übernimmt sie diese.</li>
+<li><b>Transparenz:</b> Menschen sollen wissen, wann KI im Spiel ist.</li>
+<li><b>Autonomie:</b> Wie viel Entscheidungsfreiheit geben wir Maschinen?</li>
+<li><b>Urheberrecht und Kreativität:</b> Besonders relevant für Kunst und Musik.</li>
+</ul>
+<h4>Technischer Ausblick</h4>
+<p>Der Trend geht von Chatbots zu <b>Agenten</b>, die eigenständig arbeiten, und zu <b>Multi-Agenten-Systemen</b>, in denen mehrere spezialisierte Agenten zusammenarbeiten. Genau dorthin führt dich Zone 7.</p>`,
+      keys: [
+        "KI verändert Aufgaben mehr als ganze Berufe",
+        "Ethik: Verantwortung, Bias, Transparenz, Autonomie",
+        "Trend: von Chatbots zu (Multi-)Agenten"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist Bias bei KI?", o: ["Ein Programmierfehler", "Verzerrung durch Vorurteile in den Trainingsdaten", "Eine Datenbank", "Ein Stromsparmodus"], a: 1, e: "KI übernimmt Muster aus den Daten, auch unfaire." },
+        { t: "tf", q: "Der Trend geht von einfachen Chatbots hin zu eigenständig arbeitenden Agenten.", a: true, e: "Claude Code ist ein Beispiel dafür." },
+        { t: "mc", q: "Welche Fähigkeit wird laut Ausblick besonders gefragt sein?", o: ["Nur Programmieren", "Fachwissen mit KI-Kompetenz verbinden", "Gar keine", "Nur Englisch"], a: 1, e: "Musiker + KI-Kompetenz = einzigartige Kombination." }
+      ],
+      practice: {
+        task: "Welche ethische Frage zu KI betrifft deinen Berufsbereich (Musik, Kultur, Lehre) am stärksten? Begründe in 2 Sätzen.",
+        hint: "Urheberrecht, Authentizität, Bewertung von Leistungen …",
+        solution: "Beispiel: „Urheberrecht. Wenn KI Musik im Stil echter Komponisten erzeugt, stellt sich die Frage, wem das Werk gehört und ob die Originalkünstler fair beteiligt werden.“"
+      }
+    },
+    {
+      id: "z6l2",
+      title: "Anstellung oder Selbstständigkeit",
+      icon: "💼",
+      lesson: `
+<p>Mit KI-Kompetenz eröffnen sich zwei Wege:</p>
+<h4>Angestellt</h4>
+<ul>
+<li>Als KI-Manager, KI-Beauftragter oder Automatisierungsexperte im Unternehmen</li>
+<li>Oder: im bisherigen Beruf mit KI-Know-how als Zusatzqualifikation</li>
+<li>Vorteile: Sicherheit, Teamarbeit, Zugang zu großen Projekten</li>
+</ul>
+<h4>Selbstständig</h4>
+<p>Typische <b>KI-Geschäftsmodelle</b>:</p>
+<ul>
+<li><b>Agentur:</b> Automationen, Chatbots und Voice Agents für Kunden bauen</li>
+<li><b>Beratung:</b> Firmen bei Strategie und Einführung begleiten</li>
+<li><b>Schulungen und Workshops:</b> KI-Kompetenz vermitteln, die der AI Act ohnehin fordert</li>
+<li><b>Eigene Produkte:</b> Vorlagen, Tools, Apps oder Online-Kurse</li>
+<li><b>Wartungsverträge:</b> Laufende Betreuung gebauter Lösungen, also wiederkehrender Umsatz</li>
+</ul>
+<h4>Spezialisierung</h4>
+<p>Statt „Ich mache alles mit KI“ lieber ein klares Feld wählen, z. B. nach <b>Branche</b> (Kulturbetriebe, Arztpraxen), nach <b>Technologie</b> (Voice Agents), nach <b>Prozess</b> (Vertrieb, Buchhaltung) oder nach <b>Zielgruppe</b> (Vereine, Selbstständige).</p>
+<div class="tip">Deine Nische kann deine Herkunft sein: Wer selbst Musiker ist, versteht Kulturbetriebe besser als jede allgemeine Agentur.</div>`,
+      keys: [
+        "Angestellt: KI-Manager oder KI als Zusatzqualifikation",
+        "Selbstständig: Agentur, Beratung, Schulung, Produkte, Wartung",
+        "Spezialisieren: Branche, Technologie, Prozess, Zielgruppe"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne das Geschäftsmodell zu.", p: [["Agentur", "Lösungen für Kunden bauen"], ["Schulung", "KI-Kompetenz vermitteln"], ["Wartungsvertrag", "Laufende Betreuung, wiederkehrender Umsatz"], ["Eigenes Produkt", "Vorlagen oder Apps verkaufen"]], e: "Viele kombinieren mehrere Modelle." },
+        { t: "tf", q: "„Ich mache alles mit KI für alle“ ist eine starke Positionierung.", a: false, e: "Spezialisierung macht dich sichtbar und glaubwürdig." },
+        { t: "mc", q: "Warum sind Wartungsverträge attraktiv?", o: ["Sie sind einmalig", "Sie bringen wiederkehrenden, planbaren Umsatz", "Sie sind kostenlos", "Sie erfordern keine Arbeit"], a: 1, e: "Planbarkeit ist für Selbstständige Gold wert." }
+      ],
+      practice: {
+        task: "Formuliere eine mögliche Nische für dich, die Musik und KI verbindet.",
+        hint: "Branche + Problem + Lösung.",
+        solution: "Beispiel: „Ich helfe Orchestern und Ensembles, ihre Disposition, Probenplanung und Kommunikation mit KI zu automatisieren, von Musikern für Musiker.“"
+      }
+    },
+    {
+      id: "z6l3",
+      title: "Angebot und Kundengewinnung",
+      icon: "🤝",
+      lesson: `
+<h4>Ein gutes Angebot</h4>
+<p>Kunden kaufen keine Technik, sondern <b>Ergebnisse</b>. Also nicht „Ich baue Ihnen einen n8n-Workflow“, sondern „Sie sparen 10 Stunden pro Woche bei der Anfragenbearbeitung“.</p>
+<ul>
+<li><b>Problem</b> klar benennen</li>
+<li><b>Ergebnis</b> konkret machen, am besten in Zeit oder Geld</li>
+<li><b>Ablauf</b> zeigen: Analyse → Pilot → Umsetzung → Betreuung</li>
+<li><b>Preis</b> am Wert orientieren, nicht nur an Stunden</li>
+</ul>
+<h4>Kunden gewinnen</h4>
+<ul>
+<li><b>Netzwerk:</b> Die ersten Kunden kommen fast immer aus dem eigenen Umfeld.</li>
+<li><b>Sichtbarkeit:</b> Fallbeispiele, Vorher-nachher-Vergleiche, Beiträge auf LinkedIn.</li>
+<li><b>Kostenlose Erstanalyse:</b> 30 Minuten Gespräch, in dem du 2–3 Automationsideen aufzeigst.</li>
+<li><b>Pilotprojekt:</b> Klein und günstig starten, Ergebnis messen und dann ausbauen.</li>
+<li><b>Empfehlungen:</b> Zufriedene Kunden aktiv um Weiterempfehlung bitten.</li>
+</ul>
+<h4>Fallstudien</h4>
+<p>Dokumentiere jedes Projekt als kurze <b>Fallstudie</b>: Ausgangslage → Lösung → messbares Ergebnis. Das ist dein stärkstes Verkaufsargument.</p>`,
+      keys: [
+        "Ergebnisse verkaufen, nicht Technik",
+        "Problem → Ergebnis → Ablauf → Preis",
+        "Netzwerk, Sichtbarkeit, Erstanalyse, Pilot, Fallstudien"
+      ],
+      quiz: [
+        { t: "mc", q: "Welche Formulierung verkauft besser?", o: ["„Ich baue einen Workflow mit 12 Nodes.“", "„Sie beantworten Anfragen in 2 statt 24 Stunden und sparen 8 Stunden pro Woche.“", "„Ich nutze die neueste KI.“", "„Ich kann programmieren.“"], a: 1, e: "Ergebnis statt Technik." },
+        { t: "order", q: "Bringe den typischen Projektablauf in die richtige Reihenfolge.", o: ["Kostenlose Erstanalyse", "Pilotprojekt", "Umsetzung", "Laufende Betreuung"], e: "Vertrauen schrittweise aufbauen." },
+        { t: "tf", q: "Eine Fallstudie besteht aus Ausgangslage, Lösung und messbarem Ergebnis.", a: true, e: "Einfach, glaubwürdig, überzeugend." }
+      ],
+      practice: {
+        task: "Schreibe einen Ein-Satz-Pitch für ein KI-Angebot, das auf Ergebnisse statt Technik setzt.",
+        hint: "Für wen + welches Problem + welches messbare Ergebnis.",
+        solution: "„Ich helfe Musikvereinen, ihre Mitgliederverwaltung so zu automatisieren, dass der Vorstand jede Woche 5 Stunden Ehrenamt-Zeit zurückgewinnt.“"
+      }
+    },
+    {
+      id: "z6l4",
+      title: "Deinen Wert verhandeln",
+      icon: "💶",
+      lesson: `
+<p>Ob Gehalt oder Honorar: KI-Kompetenz ist gefragt. Du solltest sie selbstbewusst einbringen.</p>
+<h4>Vorbereitung</h4>
+<ul>
+<li><b>Marktwert recherchieren:</b> Was zahlen andere für vergleichbare Rollen oder Projekte?</li>
+<li><b>Belege sammeln:</b> Welche Zeit oder welches Geld hast du durch KI eingespart? Zahlen überzeugen.</li>
+<li><b>Ziel und Untergrenze festlegen:</b> Was willst du erreichen, und unter welchem Betrag sagst du nein?</li>
+</ul>
+<h4>Gesprächsaufbau</h4>
+<ol>
+<li><b>Wertschätzung:</b> Positiver Einstieg</li>
+<li><b>Leistung zeigen:</b> „Durch die Automatisierung der Anfragen spart das Team 10 Stunden pro Woche.“</li>
+<li><b>Konkrete Zahl nennen:</b> Wer zuerst eine Zahl nennt, setzt den Anker. Nenne eine begründete, eher hohe Zahl.</li>
+<li><b>Schweigen aushalten:</b> Nach der Zahl nicht sofort relativieren.</li>
+<li><b>Alternativen:</b> Wenn Geld nicht geht: Weiterbildung, Homeoffice, Titel, Budget für Tools.</li>
+</ol>
+<div class="tip">Übe das Gespräch mit KI: „Spiel einen skeptischen Orchesterdirektor. Ich verhandle mein Honorar für einen KI-Workshop. Gib mir danach Feedback.“</div>`,
+      keys: [
+        "Marktwert und Belege vorbereiten",
+        "Anker setzen: begründete Zahl zuerst nennen",
+        "Alternativen kennen; mit KI üben"
+      ],
+      quiz: [
+        { t: "mc", q: "Was bedeutet „den Anker setzen“?", o: ["Das Gespräch beenden", "Als Erstes eine konkrete Zahl nennen, an der sich alles orientiert", "Einen Anwalt mitbringen", "Pause machen"], a: 1, e: "Die erste Zahl prägt den Verhandlungsrahmen." },
+        { t: "tf", q: "Messbare Einsparungen durch deine KI-Arbeit sind starke Argumente in einer Verhandlung.", a: true, e: "Zahlen schlagen Behauptungen." },
+        { t: "mc", q: "Wie kann KI dir bei der Vorbereitung helfen?", o: ["Gar nicht", "Als Rollenspiel-Gegenüber mit anschließendem Feedback", "Indem sie für dich verhandelt", "Indem sie das Gehalt festlegt"], a: 1, e: "Ein sicherer Übungsraum vor dem echten Gespräch." }
+      ],
+      practice: {
+        task: "Schreibe einen Rollenspiel-Prompt, mit dem du eine Honorarverhandlung üben kannst.",
+        hint: "Rolle der KI, Situation, dein Ziel, Feedback-Wunsch.",
+        solution: "„Du bist Intendant eines Stadttheaters und eher sparsam. Ich biete einen halbtägigen KI-Workshop für dein Team an und will 900 € Honorar. Verhandle realistisch mit Einwänden. Nach 6 Runden: Gib mir Feedback zu Argumenten und Wirkung.“"
+      }
+    }
+  ]
+});
+
+(window.ZONES = window.ZONES || []).push({
+  id: "z7",
+  title: "Claude Code",
+  subtitle: "Dein KI-Agent im Terminal",
+  icon: "💻",
+  color: "#d97706",
+  badge: { name: "Terminal-Held", icon: "⌨️" },
+  levels: [
+    {
+      id: "z7l1",
+      title: "Was ist Claude Code?",
+      icon: "🤖",
+      lesson: `
+<p><b>Claude Code</b> ist ein <b>KI-Agent von Anthropic</b>, der direkt auf deinem Computer arbeitet. Anders als im Chat <b>liest er deine Dateien, schreibt und ändert sie, führt Befehle aus</b> und prüft seine Ergebnisse selbst.</p>
+<h4>Chat vs. Claude Code</h4>
+<ul>
+<li><b>Chat:</b> Du kopierst Text hinein, bekommst eine Antwort und kopierst sie wieder heraus.</li>
+<li><b>Claude Code:</b> Du sagst „Erstelle eine Web-App für meine Probenplanung“, und er legt die Dateien an, testet sie und korrigiert Fehler.</li>
+</ul>
+<h4>Agentic Coding vs. Vibe Coding</h4>
+<ul>
+<li><b>Vibe Coding:</b> Einfach drauflos „wünschen“, ohne zu verstehen, was passiert. Das klappt für Spielereien, wird aber bei echten Projekten schnell chaotisch.</li>
+<li><b>Agentic Coding:</b> Du gibst <b>klare Ziele, Kontext und Regeln</b>, prüfst Zwischenergebnisse und steuerst bewusst. Der Agent arbeitet, <b>du führst</b>.</li>
+</ul>
+<div class="tip">Leitsatz: <b>Mensch steuert, Agent arbeitet.</b> Du bist Dirigent, nicht Zuschauer.</div>
+<h4>Nicht nur für Programmierer</h4>
+<p>Claude Code eignet sich auch für Nicht-Entwickler: Dateien sortieren, Texte in Serie bearbeiten, Daten auswerten, eigene kleine Tools und Webseiten bauen, Abläufe automatisieren.</p>`,
+      keys: [
+        "Claude Code = Agent, der Dateien liest/schreibt und Befehle ausführt",
+        "Agentic Coding = bewusst steuern statt blind wünschen",
+        "Mensch steuert, Agent arbeitet"
+      ],
+      quiz: [
+        { t: "mc", q: "Was kann Claude Code, was ein normaler Chat nicht kann?", o: ["Gedichte schreiben", "Direkt Dateien auf deinem Computer lesen, ändern und Befehle ausführen", "Fragen beantworten", "Übersetzen"], a: 1, e: "Er arbeitet direkt in deinem Projekt." },
+        { t: "match", q: "Ordne zu.", p: [["Vibe Coding", "Drauflos wünschen ohne Verständnis"], ["Agentic Coding", "Klare Ziele, Kontext, Kontrolle"], ["Mensch", "Steuert und prüft"], ["Agent", "Führt aus"]], e: "Du bist der Dirigent." },
+        { t: "tf", q: "Claude Code ist ausschließlich für professionelle Programmierer gedacht.", a: false, e: "Auch Nicht-Entwickler können damit Tools bauen und Abläufe automatisieren." }
+      ],
+      practice: {
+        task: "Nenne zwei Projekte, die du mit Claude Code umsetzen möchtest.",
+        hint: "Eigene Tools, Webseite, Datei-Aufräumarbeiten, Auswertungen …",
+        solution: "Beispiele: 1) Eigene Künstler-Webseite bauen und pflegen. 2) Ein Tool, das aus einem Konzertprogramm automatisch Probenplan und Packliste erstellt."
+      }
+    },
+    {
+      id: "z7l2",
+      title: "Oberflächen und Pläne",
+      icon: "🖥️",
+      lesson: `
+<p>Claude Code gibt es in mehreren Formen:</p>
+<ul>
+<li><b>Terminal (CLI):</b> Das Original. Du tippst Befehle in die Kommandozeile. Am mächtigsten und flexibelsten.</li>
+<li><b>IDE-Integration:</b> In Code-Editoren wie <b>VS Code</b> oder JetBrains. Du siehst Änderungen direkt im Editor.</li>
+<li><b>Desktop-App:</b> Mit grafischer Oberfläche, gut für den Einstieg.</li>
+<li><b>Web/Cloud:</b> Läuft im Browser in einer Cloud-Umgebung, z. B. direkt mit deinen GitHub-Repos. Aufgaben laufen weiter, auch wenn du weg bist.</li>
+</ul>
+<h4>Wann welches?</h4>
+<ul>
+<li>Einstieg und Überblick: <b>Desktop oder Web</b></li>
+<li>Tägliche Arbeit an einem Projekt: <b>Terminal oder IDE</b></li>
+<li>Lange Aufgaben „nebenbei“: <b>Web/Cloud</b></li>
+</ul>
+<h4>Wie bezahlt man?</h4>
+<ul>
+<li><b>Abo (Pro oder Max):</b> Fester Monatspreis mit Nutzungslimits, die sich regelmäßig zurücksetzen. Max bietet deutlich mehr Nutzung. Gut planbar.</li>
+<li><b>API (Pay-as-you-go):</b> Abrechnung pro Token über die Anthropic Console. Flexibel, kann bei viel Nutzung aber teuer werden.</li>
+</ul>
+<div class="tip">Für Einsteiger ist ein Abo meist die bessere Wahl: keine Überraschungen auf der Rechnung.</div>`,
+      keys: [
+        "Terminal, IDE, Desktop, Web",
+        "Abo = planbar mit Limits; API = pro Token",
+        "Einsteiger: Abo"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne die Oberfläche dem Einsatz zu.", p: [["Terminal", "Mächtigste, flexible Arbeit per Befehl"], ["IDE (VS Code)", "Änderungen direkt im Editor sehen"], ["Web/Cloud", "Lange Aufgaben laufen weiter, auch wenn du weg bist"]], e: "Alle nutzen denselben Agenten." },
+        { t: "mc", q: "Was ist der Vorteil eines Abos gegenüber der API-Abrechnung?", o: ["Unbegrenzte Nutzung", "Planbare Kosten", "Es ist immer schneller", "Man braucht keinen Account"], a: 1, e: "Fester Preis, dafür Nutzungslimits." },
+        { t: "tf", q: "Bei der API zahlt man nach verbrauchten Tokens.", a: true, e: "Pay-as-you-go." }
+      ],
+      practice: {
+        task: "Welche Oberfläche und welcher Bezahlweg passen zu dir? Begründe kurz.",
+        hint: "Wie technisch bist du? Wie oft wirst du es nutzen?",
+        solution: "Beispiel: „Zum Einstieg die Desktop- oder Web-Version mit Pro-Abo, weil ich planbare Kosten will und das Terminal noch neu für mich ist. Später Terminal für meine Webseite.“"
+      }
+    },
+    {
+      id: "z7l3",
+      title: "Die 3 Säulen und Markdown",
+      icon: "🏛️",
+      lesson: `
+<p>Gute Ergebnisse mit Claude Code ruhen auf <b>drei Säulen</b>:</p>
+<ol>
+<li><b>Context (Kontext):</b> Was muss der Agent wissen? Projektziel, Zielgruppe, vorhandene Dateien, Vorlieben, Einschränkungen. Je besser der Kontext, desto weniger rät er.</li>
+<li><b>Instructions (Anweisungen):</b> Was genau soll er tun, und nach welchen Regeln? Klare, überprüfbare Aufträge statt vager Wünsche.</li>
+<li><b>Iteration:</b> Ergebnis ansehen, Feedback geben, verbessern. Kleine Schritte statt eines Riesenauftrags.</li>
+</ol>
+<h4>Warum Markdown (.md)?</h4>
+<p><b>Markdown</b> ist ein einfaches Textformat mit wenigen Zeichen für Struktur:</p>
+<pre># Überschrift
+## Unterüberschrift
+- Aufzählungspunkt
+**fett**</pre>
+<p>Vorteile für die KI-Arbeit:</p>
+<ul>
+<li>Für Menschen <b>und</b> KI gut lesbar</li>
+<li>Klare Struktur durch Überschriften und Listen</li>
+<li>Kein Ballast wie bei Word-Dateien, also weniger Tokens</li>
+<li>Die wichtigsten Konfigurationsdateien von Claude Code (CLAUDE.md, Skills, Agents) sind Markdown</li>
+</ul>
+<div class="tip">Speichere Wissen, das Claude öfter braucht, als .md-Datei im Projekt, z. B. „stil.md“ mit deinem Schreibstil.</div>`,
+      keys: [
+        "Context, Instructions, Iteration",
+        "Markdown = einfaches, strukturiertes Textformat",
+        "Konfiguration von Claude Code ist Markdown"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne die Säule zu.", p: [["„Die Seite ist für Konzertveranstalter gedacht.“", "Context"], ["„Nutze nur deutsche Texte und keine externen Bibliotheken.“", "Instructions"], ["„Mach die Überschrift größer, sonst passt es.“", "Iteration"]], e: "Alle drei zusammen ergeben gute Resultate." },
+        { t: "mc", q: "Wie schreibt man in Markdown eine Hauptüberschrift?", o: ["<h1>Titel", "# Titel", "**Titel**", "Titel:"], a: 1, e: "Ein # = Ebene 1, ## = Ebene 2 usw." },
+        { t: "tf", q: "Markdown-Dateien verbrauchen meist weniger Tokens als komplex formatierte Dokumente.", a: true, e: "Kein Formatierungsballast." }
+      ],
+      practice: {
+        task: "Schreibe eine kleine Markdown-Datei „ueber-mich.md“ mit Überschrift, 3 Stichpunkten und einem fetten Wort.",
+        hint: "# für Überschrift, - für Stichpunkte, **…** für fett.",
+        solution: "# Über mich\n- Professioneller Schlagzeuger und **Paukist**\n- Spielt in einem Blechbläser-Ensemble\n- Unterrichtet Schlagwerk"
+      }
+    },
+    {
+      id: "z7l4",
+      title: "Terminal und Installation",
+      icon: "⌨️",
+      lesson: `
+<p>Das <b>Terminal</b> (auch Kommandozeile oder Shell) ist ein Fenster, in dem du dem Computer Befehle als Text gibst. Auf dem Mac heißt es „Terminal“, unter Windows nutzt man PowerShell oder WSL.</p>
+<h4>Die wichtigsten Grundbefehle</h4>
+<ul>
+<li><code>pwd</code>: Wo bin ich gerade? Zeigt den aktuellen Ordner.</li>
+<li><code>ls</code>: Was liegt hier? Listet die Dateien (unter Windows-CMD: <code>dir</code>).</li>
+<li><code>cd ordnername</code>: In einen Ordner wechseln. <code>cd ..</code> geht eine Ebene hoch.</li>
+<li><code>mkdir neuerordner</code>: Ordner anlegen.</li>
+</ul>
+<h4>Installation</h4>
+<p>Anthropic bietet einen <b>offiziellen Installer</b> an. Den aktuellen Befehl findest du in der offiziellen Claude-Code-Dokumentation. Alternativ geht es über npm (braucht Node.js):</p>
+<pre>npm install -g @anthropic-ai/claude-code</pre>
+<h4>Erster Start</h4>
+<ol>
+<li>Mit <code>cd</code> in deinen Projektordner wechseln</li>
+<li><code>claude</code> eintippen und Enter drücken</li>
+<li>Beim ersten Mal <b>anmelden</b> (Abo-Konto oder API-Key)</li>
+<li>Einfach losschreiben, auf Deutsch: „Was liegt in diesem Ordner?“</li>
+</ol>
+<p><b>Health-Check:</b> <code>/doctor</code> prüft, ob die Installation in Ordnung ist. Mit <code>/help</code> siehst du alle Befehle.</p>
+<div class="tip">Starte Claude Code immer im <b>richtigen Projektordner</b>. Er arbeitet mit den Dateien dort, wo du ihn startest.</div>`,
+      keys: [
+        "pwd, ls, cd, mkdir",
+        "Start: cd ins Projekt, dann claude",
+        "/doctor = Health-Check, /help = Hilfe"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne den Befehl seiner Bedeutung zu.", p: [["pwd", "Aktuellen Ordner anzeigen"], ["ls", "Dateien auflisten"], ["cd ..", "Eine Ebene hoch"], ["mkdir", "Ordner anlegen"]], e: "Mit diesen vier kommst du schon weit." },
+        { t: "order", q: "Bringe den ersten Start in die richtige Reihenfolge.", o: ["Terminal öffnen", "Mit cd in den Projektordner wechseln", "claude eintippen", "Anmelden", "Erste Aufgabe formulieren"], e: "Immer im richtigen Ordner starten." },
+        { t: "mc", q: "Welcher Befehl prüft, ob Claude Code richtig installiert ist?", o: ["/clear", "/doctor", "/exit", "ls"], a: 1, e: "Der „Arzt“ untersucht deine Installation." }
+      ],
+      practice: {
+        task: "Schreibe die Befehle auf, mit denen du einen Ordner „lernreise“ anlegst, hineinwechselst und Claude Code startest.",
+        hint: "Drei Befehle nacheinander.",
+        solution: "mkdir lernreise\ncd lernreise\nclaude"
+      }
+    },
+    {
+      id: "z7l5",
+      title: "CLAUDE.md und der .claude-Ordner",
+      icon: "📝",
+      lesson: `
+<p>Claude Code beginnt jede Sitzung ohne Erinnerung an die letzte. Damit er dein Projekt trotzdem kennt, gibt es die <b>CLAUDE.md</b>, das <b>Projektgedächtnis</b>.</p>
+<h4>Was ist CLAUDE.md?</h4>
+<p>Eine Markdown-Datei, die Claude Code <b>bei jedem Start automatisch liest</b>. Hinein gehören:</p>
+<ul>
+<li>Worum geht es im Projekt? Wer ist die Zielgruppe?</li>
+<li>Wichtige Befehle, z. B. zum Testen oder Starten</li>
+<li>Regeln und Vorlieben: „Texte immer auf Deutsch, Sie-Form“</li>
+<li>Was er <b>nicht</b> tun soll</li>
+</ul>
+<p>Mit <code>/init</code> erstellt Claude Code eine erste CLAUDE.md, indem er dein Projekt analysiert. Mit <code>/memory</code> kannst du sie bearbeiten.</p>
+<h4>Global vs. lokal</h4>
+<ul>
+<li><b>Global:</b> <code>~/.claude/CLAUDE.md</code> im Home-Ordner gilt für <b>alle</b> Projekte, z. B. „Antworte immer auf Deutsch.“</li>
+<li><b>Projekt:</b> <code>CLAUDE.md</code> im Projektordner gilt für <b>dieses</b> Projekt und kann mit dem Team geteilt werden.</li>
+</ul>
+<h4>Der .claude-Ordner</h4>
+<p>Neben CLAUDE.md gibt es den Ordner <code>.claude</code>, ebenfalls global (<code>~/.claude/</code>) oder im Projekt. Dort liegen u. a.:</p>
+<ul>
+<li><code>settings.json</code>: Einstellungen und Berechtigungen</li>
+<li><code>skills/</code>: Skills (Level 8)</li>
+<li><code>agents/</code>: Subagents (Level 9)</li>
+</ul>
+<div class="tip">Halte CLAUDE.md <b>kurz und aktuell</b>. Sie wird jedes Mal gelesen und verbraucht Kontext.</div>`,
+      keys: [
+        "CLAUDE.md = Projektgedächtnis, wird automatisch gelesen",
+        "/init erstellt sie, /memory bearbeitet sie",
+        "Global (~/.claude) vs. Projekt",
+        ".claude-Ordner: settings.json, skills/, agents/"
+      ],
+      quiz: [
+        { t: "mc", q: "Wann liest Claude Code die CLAUDE.md?", o: ["Nie", "Automatisch bei jedem Start", "Nur wenn man sie per Mail schickt", "Einmal im Monat"], a: 1, e: "Deshalb ist sie das Projektgedächtnis." },
+        { t: "match", q: "Ordne zu.", p: [["~/.claude/CLAUDE.md", "Gilt für alle Projekte"], ["CLAUDE.md im Projekt", "Gilt für dieses Projekt"], ["/init", "Erstellt eine erste CLAUDE.md"], ["settings.json", "Einstellungen und Berechtigungen"]], e: "Global = Home-Ordner, lokal = Projektordner." },
+        { t: "tf", q: "Eine CLAUDE.md sollte möglichst lang und ausführlich sein.", a: false, e: "Kurz und aktuell, denn sie verbraucht bei jedem Start Kontext." }
+      ],
+      practice: {
+        task: "Schreibe eine kurze CLAUDE.md für deine Künstler-Webseite (Ziel, Zielgruppe, 3 Regeln).",
+        hint: "Markdown mit Überschriften und Stichpunkten.",
+        solution: "# Meine Künstler-Webseite\n## Ziel\nProfessionelle Webseite als Paukist für Veranstalter und Orchester.\n## Regeln\n- Texte auf Deutsch, später Englisch\n- Eine einzige HTML-Datei, keine externen Abhängigkeiten\n- Vor jeder größeren Änderung kurz den Plan zeigen"
+      }
+    },
+    {
+      id: "z7l6",
+      title: "Berechtigungen und Sicherheit",
+      icon: "🔐",
+      lesson: `
+<p>Claude Code kann Dateien ändern und Befehle ausführen. Deshalb fragt er standardmäßig <b>um Erlaubnis</b>, bevor er etwas Wichtiges tut.</p>
+<h4>Permission-Modi</h4>
+<ul>
+<li><b>Standard:</b> Fragt vor Dateiänderungen und Befehlen.</li>
+<li><b>Auto-Accept Edits:</b> Dateiänderungen ohne Nachfrage, Befehle weiterhin mit.</li>
+<li><b>Plan Mode:</b> Nur lesen und planen, nichts ändern (Level 7).</li>
+<li><b>Bypass Permissions:</b> Alles ohne Nachfrage. Nur in abgeschotteten Umgebungen sinnvoll, für Einsteiger <b>nicht</b> empfohlen.</li>
+</ul>
+<p>Mit <b>Shift+Tab</b> wechselst du im Terminal zwischen den Modi.</p>
+<h4>Regeln festlegen</h4>
+<p>Mit <code>/permissions</code> oder in der <code>settings.json</code> legst du fest, was <b>immer erlaubt</b> (allow) und was <b>immer verboten</b> (deny) ist, z. B. „Tests ausführen: immer erlaubt“, „Datei .env lesen: verboten“.</p>
+<h4>Sicherheitsregeln für Einsteiger</h4>
+<ul>
+<li>Lies, was Claude ausführen will, bevor du zustimmst.</li>
+<li>Nutze <b>Git</b> (Level 12), damit sich jede Änderung rückgängig machen lässt.</li>
+<li>Gib keine Passwörter oder API-Keys in den Chat. Leg sie in eine <code>.env</code>-Datei, die nicht hochgeladen wird.</li>
+<li>Vorsicht bei Inhalten aus dem Internet: Sie können versteckte Anweisungen enthalten (<b>Prompt Injection</b>).</li>
+</ul>`,
+      keys: [
+        "Standard, Auto-Accept, Plan, Bypass",
+        "Shift+Tab wechselt den Modus",
+        "allow/deny in /permissions oder settings.json",
+        "Erst lesen, dann erlauben"
+      ],
+      quiz: [
+        { t: "mc", q: "Mit welcher Tastenkombination wechselst du im Terminal den Permission-Modus?", o: ["Strg+C", "Shift+Tab", "Alt+F4", "Esc"], a: 1, e: "Shift+Tab schaltet durch die Modi." },
+        { t: "match", q: "Ordne den Modus zu.", p: [["Standard", "Fragt vor Änderungen und Befehlen"], ["Auto-Accept Edits", "Ändert Dateien ohne Nachfrage"], ["Plan Mode", "Nur lesen und planen"], ["Bypass Permissions", "Alles ohne Nachfrage, riskant"]], e: "Für Einsteiger: Standard und Plan Mode." },
+        { t: "tf", q: "Es ist eine gute Idee, API-Keys direkt in den Chat mit Claude Code zu tippen.", a: false, e: "Keys gehören in eine .env-Datei, die nicht hochgeladen wird." },
+        { t: "mc", q: "Was ist Prompt Injection?", o: ["Ein schneller Prompt", "Versteckte Anweisungen in fremden Inhalten, die den Agenten manipulieren wollen", "Eine Installationsmethode", "Ein Tastenkürzel"], a: 1, e: "Darum fremde Inhalte mit Vorsicht behandeln." }
+      ],
+      practice: {
+        task: "Formuliere 2 Allow- und 2 Deny-Regeln für dein Webseiten-Projekt (in eigenen Worten).",
+        hint: "Was ist harmlos und häufig? Was ist gefährlich oder geheim?",
+        solution: "Allow: Dateien im Projekt lesen; lokalen Testserver starten. Deny: .env-Datei lesen; Dateien außerhalb des Projektordners löschen."
+      }
+    },
+    {
+      id: "z7l7",
+      title: "Plan Mode, Kontext und Tokens",
+      icon: "🧭",
+      lesson: `
+<h4>Plan Mode, der Modus, den viele nicht kennen</h4>
+<p>Im <b>Plan Mode</b> darf Claude Code nur <b>lesen und nachdenken</b>, aber nichts ändern. Er untersucht dein Projekt und legt dir einen <b>Plan</b> vor. Erst wenn du zustimmst, setzt er ihn um.</p>
+<div class="tip">Bei größeren Aufgaben immer zuerst den Plan Mode nutzen. Ein falscher Plan ist billig zu korrigieren, ein falsch gebautes Projekt nicht.</div>
+<h4>Kontext managen</h4>
+<p>Wie jedes LLM hat Claude Code ein <b>Kontextfenster</b>. Je voller es wird, desto ungenauer und teurer wird die Arbeit.</p>
+<ul>
+<li><code>/clear</code>: Gespräch leeren, frisch anfangen. Ideal bei einem neuen Thema.</li>
+<li><code>/compact</code>: Gespräch zusammenfassen, das Wichtige bleibt erhalten.</li>
+<li><code>/context</code>: Zeigt, wie voll das Kontextfenster ist.</li>
+</ul>
+<h4>Modelle und Tokens</h4>
+<ul>
+<li><code>/model</code>: Modell wechseln, z. B. Opus für schwierige Aufgaben und ein schnelleres Modell für einfache.</li>
+<li>Bei Abos gibt es <b>Nutzungslimits</b>. Lange Gespräche, große Dateien und große Modelle verbrauchen mehr.</li>
+</ul>
+<h4>Steuern während der Arbeit</h4>
+<ul>
+<li><b>Esc</b>: Claude unterbrechen, z. B. wenn er in die falsche Richtung läuft.</li>
+<li><b>Esc Esc</b> bzw. <code>/rewind</code>: Zu einem früheren Punkt zurückspringen.</li>
+</ul>`,
+      keys: [
+        "Plan Mode = erst planen, dann bauen",
+        "/clear neu, /compact zusammenfassen, /context Füllstand",
+        "/model wechselt das Modell; Esc unterbricht"
+      ],
+      quiz: [
+        { t: "mc", q: "Was passiert im Plan Mode?", o: ["Claude ändert sofort alle Dateien", "Claude liest und plant, ändert aber nichts, bis du zustimmst", "Claude schaltet sich aus", "Claude plant deinen Urlaub"], a: 1, e: "Erst denken, dann handeln." },
+        { t: "match", q: "Ordne den Befehl zu.", p: [["/clear", "Gespräch leeren, neu anfangen"], ["/compact", "Gespräch zusammenfassen"], ["/context", "Füllstand des Kontexts anzeigen"], ["/model", "Modell wechseln"]], e: "Mit diesen vier sparst du Tokens und Nerven." },
+        { t: "mc", q: "Claude arbeitet gerade in die falsche Richtung. Was tust du?", o: ["Computer ausschalten", "Esc drücken und korrigieren", "Warten, bis er fertig ist", "Neue Datei anlegen"], a: 1, e: "Esc unterbricht, dann kannst du neu steuern." },
+        { t: "tf", q: "Bei einem komplett neuen Thema ist /clear meist sinnvoll.", a: true, e: "Alter Kontext verwirrt nur und kostet Tokens." }
+      ],
+      practice: {
+        task: "Schreibe einen Auftrag, den du im Plan Mode an Claude Code geben würdest, für eine Erweiterung deiner Webseite.",
+        hint: "Ziel + Bitte um Plan + „noch nichts ändern“.",
+        solution: "„Ich möchte eine Seite ‚Termine‘ mit kommenden Konzerten ergänzen, die ich selbst leicht pflegen kann. Untersuche das Projekt und schlage einen Plan vor: welche Dateien, welche Struktur, wie ich Termine eintrage. Noch nichts ändern.“"
+      }
+    },
+    {
+      id: "z7l8",
+      title: "Skills",
+      icon: "🎓",
+      lesson: `
+<p>Ein <b>Skill</b> ist eine <b>wiederverwendbare Anleitung</b> für eine bestimmte Aufgabe, wie ein Rezept, das Claude bei Bedarf hervorholt.</p>
+<h4>Aufbau</h4>
+<p>Ein Skill ist ein Ordner mit einer Datei <code>SKILL.md</code>, z. B. <code>.claude/skills/pressetext/SKILL.md</code>:</p>
+<pre>---
+name: pressetext
+description: Schreibt Pressetexte für Konzerte im Stil
+  des Ensembles. Nutzen, wenn ein Pressetext gebraucht wird.
+---
+# Pressetext schreiben
+1. Programm und Besetzung erfassen
+2. Aufhänger finden (Jubiläum, Uraufführung …)
+3. Max. 2.500 Zeichen, Zitat des Leiters einbauen
+4. Mit stil.md abgleichen</pre>
+<ul>
+<li>Der Kopfteil zwischen <code>---</code> (<b>Frontmatter</b>) enthält <b>Name</b> und <b>Beschreibung</b>. An der Beschreibung erkennt Claude, <b>wann</b> der Skill passt.</li>
+<li>Darunter steht die eigentliche Anleitung. Zusätzlich können Vorlagen, Beispiele oder Skripte im Ordner liegen.</li>
+</ul>
+<h4>Warum Skills so stark sind</h4>
+<ul>
+<li>Claude lädt einen Skill <b>nur bei Bedarf</b>. Das spart Kontext, anders als bei der CLAUDE.md, die immer gelesen wird.</li>
+<li>Einmal gut gebaut, liefert er <b>immer gleich gute</b> Ergebnisse.</li>
+<li>Skills lassen sich teilen, im Team oder als Plugin.</li>
+</ul>
+<h4>Reverse Engineering</h4>
+<p>Ein guter Weg zum eigenen Skill: Nimm ein <b>gelungenes Beispiel</b> (einen Text, ein Carousel, ein Angebot) und lass Claude analysieren, <b>was es gut macht</b>. Daraus wird die Anleitung im Skill.</p>`,
+      keys: [
+        "Skill = Ordner mit SKILL.md",
+        "Frontmatter: name + description (wann nutzen)",
+        "Wird nur bei Bedarf geladen",
+        "Reverse Engineering guter Beispiele"
+      ],
+      quiz: [
+        { t: "mc", q: "Woran erkennt Claude, wann ein Skill passt?", o: ["Am Dateinamen der Bilder", "An der description im Frontmatter", "An der Uhrzeit", "Gar nicht"], a: 1, e: "Darum muss die Beschreibung klar sagen, wann der Skill gebraucht wird." },
+        { t: "tf", q: "Skills werden wie die CLAUDE.md bei jedem Start komplett gelesen.", a: false, e: "Skills werden nur bei Bedarf geladen. Das spart Kontext." },
+        { t: "mc", q: "Wo liegt ein Projekt-Skill typischerweise?", o: [".claude/skills/name/SKILL.md", "Desktop/skill.docx", "In der E-Mail", "CLAUDE.md"], a: 0, e: "Jeder Skill hat seinen eigenen Ordner." },
+        { t: "order", q: "Reverse-Engineering-Technik: Bringe die Schritte in die richtige Reihenfolge.", o: ["Gelungenes Beispiel auswählen", "Claude analysieren lassen, was es gut macht", "Erkenntnisse als Anleitung in SKILL.md schreiben", "Skill testen und verbessern"], e: "Vom Vorbild zur wiederholbaren Anleitung." }
+      ],
+      practice: {
+        task: "Schreibe das Frontmatter (name + description) für einen Skill, den du gern hättest.",
+        hint: "Die description sagt, was er tut UND wann er genutzt wird.",
+        solution: "---\nname: probenplan\ndescription: Erstellt aus Konzertprogramm und Terminen einen Probenplan als Tabelle. Nutzen, wenn ein Probenplan oder eine Probenübersicht gebraucht wird.\n---"
+      }
+    },
+    {
+      id: "z7l9",
+      title: "Subagents und Agent-Teams",
+      icon: "👥",
+      lesson: `
+<p>Ein <b>Subagent</b> ist ein <b>spezialisierter Helfer</b>, an den Claude Code eine Teilaufgabe abgibt. Er arbeitet in seinem <b>eigenen Kontextfenster</b> und liefert nur das Ergebnis zurück.</p>
+<h4>Warum das hilft</h4>
+<ul>
+<li><b>Sauberer Hauptkontext:</b> Die Recherche in 50 Dateien landet nicht in deinem Hauptgespräch, nur das Ergebnis.</li>
+<li><b>Spezialisierung:</b> Ein Agent nur für Tests, einer nur für Texte, einer nur fürs Prüfen.</li>
+<li><b>Parallelität:</b> Mehrere Subagents können gleichzeitig arbeiten.</li>
+<li><b>Unabhängige Prüfung:</b> Ein Prüf-Agent, der das Ergebnis nicht selbst gebaut hat, findet mehr Fehler.</li>
+</ul>
+<h4>Eigene Subagents</h4>
+<p>Mit <code>/agents</code> erstellst und verwaltest du sie. Sie liegen als Markdown-Dateien in <code>.claude/agents/</code>, mit Name, Beschreibung, erlaubten Tools und einer eigenen Systemanweisung.</p>
+<div class="ex">Beispiel <code>korrektor.md</code>: „Du bist Lektor. Prüfe Texte auf Rechtschreibung, Tonfall und Länge. Ändere nichts, liste nur Verbesserungen auf.“ Erlaubte Tools: nur Lesen.</div>
+<h4>Agent-Teams orchestrieren</h4>
+<p>Bei großen Projekten verteilt ein Haupt-Agent die Arbeit auf ein Team: einer recherchiert, einer baut, einer testet, einer prüft. Du bist der <b>Orchestrator</b> und behältst den Überblick.</p>
+<div class="tip">Wie im Orchester: Jede Stimmgruppe hat ihre Aufgabe, aber erst der Dirigent macht ein Ganzes daraus.</div>`,
+      keys: [
+        "Subagent = spezialisierter Helfer mit eigenem Kontext",
+        "Vorteile: sauberer Kontext, Spezialisierung, Parallelität, Prüfung",
+        "/agents, Dateien in .claude/agents/",
+        "Agent-Teams orchestrieren"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist der Hauptvorteil, wenn ein Subagent eine große Recherche übernimmt?", o: ["Es ist lustiger", "Der Hauptkontext bleibt sauber, nur das Ergebnis kommt zurück", "Es kostet nie Tokens", "Der Subagent ist immer klüger"], a: 1, e: "Eigenes Kontextfenster = Ordnung im Hauptgespräch." },
+        { t: "mc", q: "Mit welchem Befehl verwaltest du Subagents?", o: ["/agents", "/clear", "/doctor", "/exit"], a: 0, e: "Sie liegen dann in .claude/agents/." },
+        { t: "tf", q: "Ein Prüf-Agent, der das Ergebnis nicht selbst gebaut hat, findet oft mehr Fehler.", a: true, e: "Wie ein Lektor, der den Text frisch liest." }
+      ],
+      practice: {
+        task: "Beschreibe ein Agent-Team aus 3 Subagents für die Pflege deiner Webseite.",
+        hint: "Wer schreibt, wer baut, wer prüft?",
+        solution: "1) Texter: schreibt Konzertankündigungen im eigenen Stil. 2) Entwickler: baut die Inhalte in die Seite ein. 3) Prüfer (nur Lesen): kontrolliert Rechtschreibung, Links, Darstellung am Handy und SEO-Grundlagen."
+      }
+    },
+    {
+      id: "z7l10",
+      title: "Hooks",
+      icon: "🪝",
+      lesson: `
+<p>Ein <b>Hook</b> ist ein Befehl, der <b>automatisch</b> an einem bestimmten Punkt der Arbeit von Claude Code ausgeführt wird, <b>immer</b> und ohne dass Claude es „vergessen“ kann.</p>
+<h4>Warum Hooks?</h4>
+<p>Anweisungen in der CLAUDE.md sind <b>Bitten</b>: Claude befolgt sie meistens. Hooks sind <b>Regeln</b>: Sie laufen garantiert. Das nennt man <b>deterministisch</b>.</p>
+<h4>Wichtige Zeitpunkte (Events)</h4>
+<ul>
+<li><b>PreToolUse:</b> <b>Bevor</b> Claude ein Werkzeug benutzt. Kann Aktionen <b>blockieren</b>, z. B. „Niemals Dateien im Ordner /archiv löschen“.</li>
+<li><b>PostToolUse:</b> <b>Nachdem</b> Claude ein Werkzeug benutzt hat, z. B. nach jeder Dateiänderung automatisch formatieren oder Tests starten.</li>
+<li><b>UserPromptSubmit:</b> Wenn du eine Nachricht abschickst.</li>
+<li><b>Stop:</b> Wenn Claude fertig ist, z. B. eine Benachrichtigung schicken.</li>
+<li><b>SessionStart:</b> Beim Start einer Sitzung, z. B. aktuelle Infos laden.</li>
+</ul>
+<h4>Einrichten</h4>
+<p>Hooks werden in der <code>settings.json</code> definiert. Mit <code>/hooks</code> kannst du sie ansehen und verwalten.</p>
+<div class="ex">Beispiel: Nach jeder Änderung an einer .html-Datei prüft ein Hook automatisch, ob die Seite fehlerfrei ist. Bei einem Fehler bekommt Claude die Meldung sofort zurück und repariert.</div>
+<div class="tip">Hooks führen Befehle auf deinem Rechner aus. Übernimm nur Hooks, die du verstehst!</div>`,
+      keys: [
+        "Hook = automatischer Befehl an festem Zeitpunkt",
+        "Deterministisch: läuft garantiert",
+        "PreToolUse (kann blockieren), PostToolUse, Stop …",
+        "In settings.json, verwaltet mit /hooks"
+      ],
+      quiz: [
+        { t: "mc", q: "Was ist der Unterschied zwischen einer Regel in CLAUDE.md und einem Hook?", o: ["Kein Unterschied", "CLAUDE.md ist eine Bitte, ein Hook läuft garantiert", "Hooks sind nur Deko", "CLAUDE.md läuft garantiert, Hooks nicht"], a: 1, e: "Hooks sind deterministisch." },
+        { t: "match", q: "Ordne das Event zu.", p: [["PreToolUse", "Vor einer Aktion, kann blockieren"], ["PostToolUse", "Nach einer Aktion, z. B. testen"], ["Stop", "Wenn Claude fertig ist"], ["SessionStart", "Beim Start einer Sitzung"]], e: "Der Zeitpunkt bestimmt, was der Hook leisten kann." },
+        { t: "mc", q: "Du willst verhindern, dass Claude jemals Dateien in /archiv löscht. Welches Event?", o: ["Stop", "PreToolUse", "PostToolUse", "SessionStart"], a: 1, e: "Nur vorher lässt sich etwas verhindern." }
+      ],
+      practice: {
+        task: "Beschreibe zwei Hooks (Event + Aktion), die dir bei deiner Webseite helfen würden.",
+        hint: "Einer, der schützt (vorher), und einer, der prüft (nachher).",
+        solution: "1) PreToolUse: Blockieren, wenn Claude Dateien im Ordner „fotos-original“ ändern oder löschen will. 2) PostToolUse: Nach jeder HTML-Änderung automatisch auf kaputte Links prüfen."
+      }
+    },
+    {
+      id: "z7l11",
+      title: "MCP und Plugins",
+      icon: "🔌",
+      lesson: `
+<h4>MCP: der USB-Anschluss für KI</h4>
+<p><b>MCP</b> (Model Context Protocol) ist ein offener Standard, mit dem KI-Anwendungen an <b>externe Tools und Datenquellen</b> angeschlossen werden. So wie USB jedes Gerät an jeden Computer anschließt, verbindet MCP Claude mit GitHub, Google Drive, Notion, Datenbanken, Kalendern und vielem mehr.</p>
+<ul>
+<li>Ein <b>MCP-Server</b> stellt Werkzeuge bereit, z. B. „Kalendereintrag erstellen“.</li>
+<li>Claude Code kann diese Werkzeuge dann direkt benutzen.</li>
+<li>Hinzufügen per <code>claude mcp add …</code>, Überblick mit <code>/mcp</code>.</li>
+</ul>
+<div class="ex">Mit einem Notion-MCP-Server: „Lies meine Konzertliste in Notion und erstelle daraus die Terminseite meiner Webseite.“</div>
+<h4>Plugins: alles im Paket</h4>
+<p>Ein <b>Plugin</b> bündelt mehrere Erweiterungen in einem Paket: <b>Skills, Subagents, Hooks, Befehle und MCP-Server</b>. Mit einem Klick bekommst du ein komplettes Werkzeugset.</p>
+<ul>
+<li>Plugins findet man in <b>Marketplaces</b> und verwaltet sie mit <code>/plugin</code>.</li>
+<li>Teams können eigene Plugins bauen und teilen, so arbeiten alle mit denselben Standards.</li>
+</ul>
+<div class="tip">Sicherheit: Ein MCP-Server oder Plugin bekommt Zugriff auf Daten und kann Aktionen ausführen. Nur vertrauenswürdige Quellen installieren!</div>`,
+      keys: [
+        "MCP = offener Standard, „USB für KI“",
+        "MCP-Server stellen Tools bereit; /mcp, claude mcp add",
+        "Plugin = Paket aus Skills, Agents, Hooks, MCP",
+        "Nur vertrauenswürdige Quellen"
+      ],
+      quiz: [
+        { t: "mc", q: "Welcher Vergleich beschreibt MCP am besten?", o: ["Ein Passwort", "Ein USB-Anschluss für KI-Werkzeuge", "Ein Drucker", "Eine Programmiersprache"], a: 1, e: "Ein Standard, viele Anschlussmöglichkeiten." },
+        { t: "match", q: "Ordne zu.", p: [["MCP-Server", "Stellt Tools und Daten bereit"], ["Plugin", "Bündelt Skills, Agents, Hooks, MCP"], ["/mcp", "Überblick über verbundene Server"], ["/plugin", "Plugins verwalten"]], e: "MCP verbindet, Plugins bündeln." },
+        { t: "tf", q: "Plugins und MCP-Server aus unbekannten Quellen sind unbedenklich.", a: false, e: "Sie können auf Daten zugreifen und Aktionen ausführen." }
+      ],
+      practice: {
+        task: "Welche zwei MCP-Verbindungen wären für dich am nützlichsten und wofür?",
+        hint: "Welche Apps nutzt du täglich?",
+        solution: "1) Google Kalender: Konzerttermine automatisch auf die Webseite übernehmen. 2) GitHub: Webseite und Tools versionieren und veröffentlichen."
+      }
+    },
+    {
+      id: "z7l12",
+      title: "Git, GitHub und Workflows",
+      icon: "🌿",
+      lesson: `
+<h4>Git: die Zeitmaschine für Projekte</h4>
+<p><b>Git</b> speichert jeden Stand deines Projekts. Du kannst jederzeit zu einer früheren Version zurück. Gerade mit einem Agenten, der viele Dateien ändert, ist das ein unverzichtbares Sicherheitsnetz.</p>
+<ul>
+<li><b>Commit:</b> Ein gespeicherter Stand mit kurzer Beschreibung („Terminseite hinzugefügt“)</li>
+<li><b>Branch:</b> Ein Seitenzweig zum Ausprobieren, ohne den Hauptstand zu gefährden</li>
+<li><b>Repository (Repo):</b> Das Projekt mit seiner ganzen Geschichte</li>
+</ul>
+<h4>GitHub</h4>
+<p><b>GitHub</b> ist die Online-Plattform für Git-Repos: Backup in der Cloud, Zusammenarbeit im Team und kostenloses Webseiten-Hosting mit <b>GitHub Pages</b>. Ein <b>Pull Request (PR)</b> schlägt Änderungen vor, die man vor dem Übernehmen prüft.</p>
+<p>Claude Code kann das alles für dich übernehmen: „Committe die Änderungen mit einer passenden Beschreibung und erstelle einen Pull Request.“</p>
+<h4>Produktiver arbeiten</h4>
+<ul>
+<li><b>IDE-Integration:</b> Claude in VS Code, Änderungen als Vorher-nachher-Vergleich (Diff) ansehen.</li>
+<li><b>Headless-Modus:</b> <code>claude -p "Aufgabe"</code> führt eine Aufgabe ohne Dialog aus, ideal für Automationen.</li>
+<li><b>Eigene Befehle:</b> Häufige Aufträge als eigene Slash-Commands oder Skills speichern.</li>
+<li><b>Tastenkürzel und Shell-Aliase:</b> z. B. einen kurzen Alias, der Claude im Webseiten-Ordner startet.</li>
+</ul>
+<h4>Typische Use Cases für Nicht-Entwickler</h4>
+<p>Webseiten bauen, Dokumente und Angebote erstellen, Audio transkribieren, Daten auswerten, Social-Media-Inhalte vorbereiten, Dateien in Serie umbenennen oder umwandeln.</p>`,
+      keys: [
+        "Git = Zeitmaschine: Commit, Branch, Repo",
+        "GitHub = Online-Plattform, Pages = Hosting, PR = Änderungsvorschlag",
+        "claude -p = Headless-Modus für Automationen"
+      ],
+      quiz: [
+        { t: "match", q: "Ordne zu.", p: [["Commit", "Gespeicherter Projektstand"], ["Branch", "Seitenzweig zum Ausprobieren"], ["Pull Request", "Vorschlag zur Übernahme von Änderungen"], ["GitHub Pages", "Kostenloses Webseiten-Hosting"]], e: "Die Grundbegriffe der Versionsverwaltung." },
+        { t: "mc", q: "Warum ist Git beim Arbeiten mit Claude Code so wichtig?", o: ["Es macht Claude schneller", "Jede Änderung lässt sich nachvollziehen und rückgängig machen", "Es ist Pflicht für die Installation", "Es spart Tokens"], a: 1, e: "Das Sicherheitsnetz für mutiges Arbeiten." },
+        { t: "mc", q: "Was macht claude -p \"…\"?", o: ["Druckt etwas aus", "Führt eine Aufgabe ohne interaktiven Dialog aus", "Pausiert Claude", "Zeigt das Passwort"], a: 1, e: "Headless-Modus, z. B. für Skripte und Automationen." }
+      ],
+      practice: {
+        task: "Formuliere einen Auftrag an Claude Code, der eine Änderung macht, committet und als Pull Request vorschlägt.",
+        hint: "Was ändern + Commit + PR + Beschreibung.",
+        solution: "„Ergänze auf der Startseite einen Abschnitt ‚Aktuelle Projekte‘ mit meinem Ensemble. Arbeite auf einem neuen Branch, committe mit einer klaren Nachricht und erstelle einen Pull Request mit kurzer Zusammenfassung, damit ich vor dem Übernehmen prüfen kann.“"
+      }
+    },
+    {
+      id: "z7l13",
+      title: "Sicherheit, Recht und Ausblick",
+      icon: "🔮",
+      lesson: `
+<h4>Sicherheitsrisiken</h4>
+<ul>
+<li><b>Geheimnisse:</b> API-Keys und Passwörter nie im Code oder in öffentlichen Repos. <code>.env</code> in die <code>.gitignore</code> eintragen.</li>
+<li><b>Prompt Injection:</b> Webseiten, Dokumente oder Mails können versteckte Anweisungen enthalten. Kritische Aktionen immer selbst bestätigen.</li>
+<li><b>Ungeprüfter Code:</b> KI-Code kann Sicherheitslücken enthalten. Bei Dingen mit Nutzerdaten, Logins oder Zahlungen gründlich prüfen oder prüfen lassen.</li>
+<li><b>Abhängigkeiten:</b> Jede installierte Bibliothek ist fremder Code. Nur bekannte, gepflegte Pakete nutzen.</li>
+</ul>
+<p>Claude Code kann auch helfen, <b>Sicherheitslücken zu finden</b>: „Prüfe dieses Projekt auf Sicherheitsprobleme und erkläre sie verständlich.“</p>
+<h4>Rechtliche Hürden</h4>
+<ul>
+<li><b>Datenschutz:</b> Kundendaten im Projekt? Dann gelten DSGVO und AVV, wie in Zone 4.</li>
+<li><b>Firmencode:</b> Klären, ob der Arbeitgeber die Nutzung von KI-Tools mit seinem Code erlaubt.</li>
+<li><b>Lizenzen:</b> Bei fremdem Code und fremden Bildern auf Lizenzen achten.</li>
+<li>Sichere Unternehmenslösung: ein <b>Corporate LLM</b> oder Business-Tarife mit klaren Datenschutzzusagen.</li>
+</ul>
+<h4>Ausblick</h4>
+<p>Claude Code ist nicht allein: <b>OpenAI Codex CLI</b> und <b>Google Gemini CLI</b> verfolgen dasselbe Prinzip, einen Agenten im Terminal. Offene Standards wie <b>MCP</b> und gemeinsame Anleitungsdateien (z. B. <b>AGENTS.md</b>) sorgen dafür, dass dein Wissen übertragbar bleibt.</p>
+<div class="tip">Das Wichtigste, was du gelernt hast, ist nicht ein einzelnes Tool, sondern die <b>Denkweise</b>: Kontext geben, klar anweisen, iterieren, prüfen. Die bleibt, auch wenn die Tools wechseln.</div>`,
+      keys: [
+        "Geheimnisse in .env + .gitignore",
+        "Prompt Injection und ungeprüften Code ernst nehmen",
+        "Recht: DSGVO, Arbeitgeber-Erlaubnis, Lizenzen",
+        "Alternativen: Codex CLI, Gemini CLI; Standards: MCP, AGENTS.md"
+      ],
+      quiz: [
+        { t: "mc", q: "Wie verhinderst du, dass deine .env-Datei mit Keys auf GitHub landet?", o: ["Sie umbenennen in keys.txt", "Sie in die .gitignore eintragen", "Sie per Mail verschicken", "Gar nicht möglich"], a: 1, e: ".gitignore listet Dateien, die Git ignorieren soll." },
+        { t: "tf", q: "KI-generierter Code kann Sicherheitslücken enthalten.", a: true, e: "Besonders bei Logins, Zahlungen und Nutzerdaten gründlich prüfen." },
+        { t: "mc", q: "Welche Tools verfolgen ein ähnliches Prinzip wie Claude Code?", o: ["Excel und Word", "OpenAI Codex CLI und Google Gemini CLI", "Photoshop und Canva", "Slack und Trello"], a: 1, e: "Agenten im Terminal sind ein Branchentrend." },
+        { t: "tf", q: "Die wichtigste übertragbare Fähigkeit ist die Denkweise: Kontext, klare Anweisungen, Iteration, Prüfung.", a: true, e: "Tools wechseln, das Prinzip bleibt." }
+      ],
+      practice: {
+        task: "Schreibe deine persönliche Sicherheits-Checkliste mit 4 Punkten für die Arbeit mit Claude Code.",
+        hint: "Geheimnisse, Bestätigen, Versionierung, Prüfung.",
+        solution: "1) Keys nur in .env, die in .gitignore steht. 2) Jede Aktion lesen, bevor ich sie erlaube; Bypass-Modus nie nutzen. 3) Immer mit Git arbeiten, damit alles rückgängig zu machen ist. 4) Vor dem Veröffentlichen einen Sicherheits-Check durch Claude oder einen Prüf-Agenten."
+      }
+    }
+  ]
+});
+
+window.ZONES.sort(function(a,b){return a.id<b.id?-1:1;});
+
+</script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Daten ----------
+  const ZONES = window.ZONES;
+  const LEVELS = [];
+  ZONES.forEach((z, zi) => z.levels.forEach((l, li) => LEVELS.push(Object.assign({}, l, { zone: z, zi: zi, li: li }))));
+  const LEVEL_BY_ID = {};
+  LEVELS.forEach((l, i) => { l.idx = i; LEVEL_BY_ID[l.id] = l; });
+  const QUESTIONS = {};
+  LEVELS.forEach(l => l.quiz.forEach((q, i) => { QUESTIONS[l.id + "#" + i] = { q: q, level: l, qid: l.id + "#" + i }; }));
+
+  const RANKS = [
+    { n: "KI-Neuling", xp: 0, i: "🌱" },
+    { n: "Prompt-Lehrling", xp: 300, i: "✏️" },
+    { n: "Tool-Entdecker", xp: 900, i: "🧭" },
+    { n: "Automations-Bastler", xp: 1700, i: "🔧" },
+    { n: "KI-Praktiker", xp: 2600, i: "⚡" },
+    { n: "KI-Manager", xp: 3600, i: "🎩" },
+    { n: "Code-Pilot", xp: 4700, i: "🛩️" },
+    { n: "Agent-Meister", xp: 5800, i: "👑" }
+  ];
+
+  const XP = { correct: 10, level: 50, perfect: 25, practice: 20, replay: 2, review: 5, boss: 300 };
+  const BOSS_COUNT = 25, BOSS_PASS = 20;
+
+  const SPECIAL_BADGES = [
+    { id: "first", n: "Erster Schritt", i: "🐣", d: "Erstes Level abgeschlossen", t: () => doneCount() >= 1 },
+    { id: "half", n: "Halbzeit", i: "🌗", d: "25 Levels abgeschlossen", t: () => doneCount() >= 25 },
+    { id: "perfect5", n: "Perfektionist", i: "💎", d: "5 Levels ohne einen Fehler", t: () => perfectCount() >= 5 },
+    { id: "practice10", n: "Macher", i: "🛠️", d: "10 Praxisaufgaben erledigt", t: () => Object.keys(S.practice).length >= 10 },
+    { id: "review10", n: "Fehlerjäger", i: "🎯", d: "10 Fehler im Wiederholungs-Modus ausgebügelt", t: () => S.reviewFixed >= 10 },
+    { id: "streak3", n: "Dranbleiber", i: "🔥", d: "3 Tage in Folge gelernt", t: () => S.streak.best >= 3 },
+    { id: "streak7", n: "Wochenserie", i: "📅", d: "7 Tage in Folge gelernt", t: () => S.streak.best >= 7 },
+    { id: "boss", n: "Drachenbezwinger", i: "🐉", d: "Endboss-Prüfung bestanden", t: () => S.boss.passed }
+  ];
+  function allBadges() {
+    return ZONES.map(z => ({ id: "zone-" + z.id, n: z.badge.name, i: z.badge.icon, d: "Zone „" + z.title + "“ abgeschlossen", t: () => z.levels.every(l => S.done[l.id]) }))
+      .concat(SPECIAL_BADGES);
+  }
+
+  // ---------- Zustand ----------
+  const KEY = "ki-lernreise-v1";
+  function defaults() {
+    return { xp: 0, done: {}, wrong: {}, practice: {}, notes: {}, streak: { count: 0, best: 0, last: null },
+      badges: {}, boss: { passed: false, best: 0, date: null }, name: "", free: false, reviewFixed: 0, started: Date.now() };
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      const s = raw ? JSON.parse(raw) : null;
+      const d = defaults();
+      if (!s) return d;
+      Object.keys(d).forEach(k => { if (s[k] === undefined) s[k] = d[k]; });
+      return s;
+    } catch (e) { return defaults(); }
+  }
+  let S = load();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* Speicher nicht verfügbar */ } }
+
+  // ---------- Helfer ----------
+  const $ = sel => document.querySelector(sel);
+  function h(tag, attrs) {
+    const el = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(k => {
+      const v = attrs[k];
+      if (k === "class") el.className = v;
+      else if (k === "html") el.innerHTML = v;
+      else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+      else if (k === "style") el.setAttribute("style", v);
+      else if (v !== false && v != null) el.setAttribute(k, v === true ? "" : v);
+    });
+    for (let i = 2; i < arguments.length; i++) {
+      const c = arguments[i];
+      if (c == null || c === false) continue;
+      if (Array.isArray(c)) c.forEach(x => x != null && el.append(x));
+      else el.append(c);
+    }
+    return el;
+  }
+  function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function dateKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function yesterdayKey() { const d = new Date(); d.setDate(d.getDate() - 1); return dateKey(d); }
+  function doneCount() { return Object.keys(S.done).filter(id => LEVEL_BY_ID[id]).length; }
+  function perfectCount() { return Object.keys(S.done).filter(id => S.done[id].perfect).length; }
+  function wrongCount() { return Object.keys(S.wrong).filter(q => QUESTIONS[q]).length; }
+  function rankIndex(xp) { let r = 0; RANKS.forEach((k, i) => { if (xp >= k.xp) r = i; }); return r; }
+  function currentStreak() { const s = S.streak; return (s.last === dateKey() || s.last === yesterdayKey()) ? s.count : 0; }
+  function isUnlocked(l) { return S.free || l.idx === 0 || !!S.done[LEVELS[l.idx - 1].id]; }
+  function bossUnlocked() { return S.free || LEVELS.every(l => S.done[l.id]); }
+  function nextLevel() { return LEVELS.find(l => !S.done[l.id] && isUnlocked(l)); }
+  function fmt(n) { return n.toLocaleString("de-DE"); }
+
+  // ---------- XP, Streak, Badges ----------
+  function touchStreak() {
+    const t = dateKey(), s = S.streak;
+    if (s.last === t) return;
+    s.count = (s.last === yesterdayKey()) ? s.count + 1 : 1;
+    s.last = t;
+    s.best = Math.max(s.best, s.count);
+    if (s.count > 1) toast("🔥 " + s.count + " Tage in Folge!");
+  }
+  function addXP(n) {
+    if (n <= 0) return;
+    const before = rankIndex(S.xp);
+    S.xp += n;
+    touchStreak();
+    save();
+    renderTop();
+    const after = rankIndex(S.xp);
+    if (after > before) {
+      const r = RANKS[after];
+      setTimeout(() => { confetti(); modal(r.i, "Neuer Rang!", "Du bist jetzt <b>" + r.n + "</b>.", "Weiter"); }, 400);
+    }
+  }
+  function checkBadges() {
+    const fresh = [];
+    allBadges().forEach(b => { if (!S.badges[b.id] && b.t()) { S.badges[b.id] = dateKey(); fresh.push(b); } });
+    save();
+    fresh.forEach((b, i) => setTimeout(() => toast(b.i + " Badge freigeschaltet: " + b.n), 700 + i * 900));
+    if (fresh.length) setTimeout(confetti, 600);
+  }
+
+  // ---------- Toast, Modal, Konfetti ----------
+  function toast(text) {
+    const t = h("div", { class: "toast" }, text);
+    $("#toasts").append(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+  function modal(icon, title, html, btn, onClose) {
+    const m = h("div", { id: "modal" },
+      h("div", { class: "card" },
+        h("div", { class: "big" }, icon),
+        h("h2", null, title),
+        h("p", { html: html }),
+        h("button", { class: "btn wide", onclick: () => { m.remove(); if (onClose) onClose(); } }, btn || "OK")));
+    document.body.append(m);
+  }
+  function confetti() {
+    const c = $("#confetti"), ctx = c.getContext("2d");
+    c.width = innerWidth; c.height = innerHeight;
+    const colors = ["#8b5cf6", "#f59e0b", "#10b981", "#ef4444", "#0ea5e9", "#ec4899"];
+    const parts = Array.from({ length: 140 }, () => ({
+      x: c.width / 2 + (Math.random() - .5) * 120, y: c.height / 3,
+      vx: (Math.random() - .5) * 14, vy: Math.random() * -12 - 4,
+      s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      col: colors[(Math.random() * colors.length) | 0]
+    }));
+    let f = 0;
+    (function step() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      parts.forEach(p => {
+        p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.vx *= .99;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.col;
+        ctx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * .66); ctx.restore();
+      });
+      if (++f < 150) requestAnimationFrame(step); else ctx.clearRect(0, 0, c.width, c.height);
+    })();
+  }
+
+  // ---------- Kopfzeile & Navigation ----------
+  function renderTop() {
+    const ri = rankIndex(S.xp), r = RANKS[ri], nx = RANKS[ri + 1];
+    const pct = nx ? Math.round((S.xp - r.xp) / (nx.xp - r.xp) * 100) : 100;
+    const st = currentStreak();
+    $("#top").innerHTML = "";
+    $("#top").append(h("div", { class: "topin" },
+      h("div", { class: "brand" }, "🧠 KI-Lernreise"),
+      h("div", { class: "rankbox" },
+        h("div", { class: "rankname" }, h("span", null, r.i + " " + r.n), h("span", null, nx ? fmt(S.xp) + " / " + fmt(nx.xp) + " XP" : fmt(S.xp) + " XP")),
+        h("div", { class: "bar" }, h("i", { style: "width:" + pct + "%" }))),
+      h("div", { class: "pill streak" + (st ? "" : " off"), title: "Streak: Tage in Folge" }, "🔥 " + st)));
+  }
+  let VIEW = "map";
+  function renderNav() {
+    const items = [
+      ["map", "🗺️", "Karte"],
+      ["review", "🔁", "Wiederholen"],
+      ["boss", "🐉", "Endboss"],
+      ["profile", "🏆", "Erfolge"]
+    ];
+    const n = $("#nav"); n.innerHTML = "";
+    const wc = wrongCount();
+    n.append(h("div", { class: "navin" }, items.map(it => h("button", { class: VIEW === it[0] ? "on" : "", onclick: () => go(it[0]) },
+      h("span", null, it[1]), it[2], it[0] === "review" && wc ? h("b", { class: "cnt" }, String(wc)) : null))));
+  }
+  function go(view, arg) {
+    VIEW = view;
+    const app = $("#app"); app.innerHTML = "";
+    document.documentElement.style.setProperty("--zc", "#6d28d9");
+    $("#nav").classList.toggle("hidden", view === "level");
+    renderTop(); renderNav();
+    ({ map: viewMap, level: viewLevel, review: viewReview, boss: viewBoss, profile: viewProfile, cert: viewCert })[view](app, arg);
+    if (view !== "map" || !arg) scrollTo(0, 0);
+  }
+
+  // ---------- Karte ----------
+  const OFFSETS = [0, 55, 85, 55, 0, -55, -85, -55];
+  function viewMap(app, scrollToNext) {
+    const total = LEVELS.length, done = doneCount(), nl = nextLevel();
+    const ri = rankIndex(S.xp);
+    app.append(h("div", { class: "hero" },
+      h("div", { class: "big" }, RANKS[ri].i),
+      h("div", { style: "flex:1" },
+        h("h1", null, done === 0 ? "Willkommen auf deiner KI-Lernreise!" : (done === total ? "Alle Levels geschafft!" : "Weiter geht's!")),
+        h("div", { class: "muted" }, done + " von " + total + " Levels · " + fmt(S.xp) + " XP · " + Object.keys(S.badges).length + " Badges"),
+        h("div", { class: "bar overall" }, h("i", { style: "width:" + Math.round(done / total * 100) + "%" })))));
+    if (nl) app.append(h("button", { class: "btn wide", onclick: () => { RUN = null; go("level", nl.id); } }, "▶ " + (done ? "Weiterlernen: " : "Starten: ") + nl.title));
+    else if (!S.boss.passed) app.append(h("button", { class: "btn wide", onclick: () => go("boss") }, "🐉 Zum Endboss"));
+    else app.append(h("button", { class: "btn wide", onclick: () => go("cert") }, "📜 Deine Urkunde ansehen"));
+
+    let nextEl = null;
+    ZONES.forEach((z, zi) => {
+      const zl = LEVELS.filter(l => l.zi === zi);
+      const zd = zl.filter(l => S.done[l.id]).length;
+      const zLocked = !isUnlocked(zl[0]);
+      const sec = h("section", { class: "zone" + (zLocked ? " locked" : ""), style: "--zc:" + z.color },
+        h("div", { class: "zhead" },
+          h("div", { class: "zi" }, zLocked ? "🔒" : z.icon),
+          h("div", null, h("h2", null, (zi ? "Zone " + zi + ": " : "") + z.title), h("p", null, z.subtitle)),
+          h("div", { class: "zprog" }, zd + "/" + zl.length, h("br"), S.badges["zone-" + z.id] ? z.badge.icon : "")));
+      const path = h("div", { class: "path" });
+      zl.forEach((l, i) => {
+        const un = isUnlocked(l), dn = S.done[l.id], isNext = nl && nl.id === l.id;
+        const node = h("div", { class: "node" + (un ? "" : " locked") + (dn ? " done" : "") + (isNext ? " next" : ""), style: "transform:translateX(" + OFFSETS[i % OFFSETS.length] + "px)" },
+          isNext ? h("div", { class: "start-tag" }, done ? "Weiter" : "Start") : null,
+          h("button", { class: "nbtn", "aria-label": l.title, onclick: () => un ? (RUN = null, go("level", l.id)) : toast("🔒 Schließe zuerst das vorherige Level ab") }, un ? l.icon : "🔒"),
+          h("div", { class: "nlabel" }, l.title),
+          h("div", { class: "stars" }, dn ? "⭐".repeat(dn.stars) + "☆".repeat(3 - dn.stars) : ""));
+        if (isNext) nextEl = node;
+        path.append(node);
+      });
+      sec.append(path);
+      app.append(sec);
+    });
+    const bu = bossUnlocked();
+    app.append(h("section", { class: "zone" + (bu ? "" : " locked"), style: "--zc:#111827" },
+      h("div", { class: "zhead" }, h("div", { class: "zi" }, "🐉"),
+        h("div", null, h("h2", null, "Endboss: Abschlussprüfung"), h("p", null, BOSS_COUNT + " Fragen aus allen Zonen · " + BOSS_PASS + " richtige zum Bestehen")),
+        h("div", { class: "zprog" }, S.boss.passed ? "✅" : (bu ? "" : "🔒"))),
+      h("div", { class: "path" }, h("div", { class: "node bossnode" + (bu ? "" : " locked") },
+        h("button", { class: "nbtn", onclick: () => go("boss") }, bu ? "🐉" : "🔒"),
+        h("div", { class: "nlabel" }, S.boss.passed ? "Besiegt! Bestwert " + S.boss.best + "/" + BOSS_COUNT : "Endboss")))));
+    if (scrollToNext && nextEl) setTimeout(() => nextEl.scrollIntoView({ block: "center", behavior: "smooth" }), 50);
+  }
+
+  // ---------- Fragen-Komponente ----------
+  const TYPE_LABEL = { mc: "Multiple Choice", tf: "Wahr oder falsch?", order: "Reihenfolge", match: "Zuordnen" };
+  function renderQuestion(q, el, opts, done) {
+    opts = opts || {};
+    el.innerHTML = "";
+    const body = h("div");
+    const fb = h("div", { class: "feedback hidden" });
+    const checkRow = h("div", { class: "sticky-foot" });
+    let locked = false;
+    el.append(h("div", { class: "qtype" }, (opts.label ? opts.label + " · " : "") + TYPE_LABEL[q.t]), h("h3", { class: "qtext" }, q.q), body, fb, checkRow);
+
+    function finish(ok, solutionText) {
+      if (locked) return; locked = true;
+      checkRow.innerHTML = "";
+      fb.className = "feedback " + (ok ? "ok" : "no");
+      fb.innerHTML = "";
+      fb.append(
+        h("h4", null, ok ? "✅ Richtig!" : "❌ Leider falsch" + (opts.wrongNote ? " " + opts.wrongNote : "")),
+        !ok && solutionText ? h("div", { class: "sol" }, "Richtig wäre: ", solutionText) : null,
+        h("p", null, q.e),
+        h("button", { class: "btn wide " + (ok ? "good" : "bad"), onclick: () => done(ok) }, opts.nextLabel || "Weiter"));
+      fb.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    if (q.t === "mc" || q.t === "tf") {
+      const choices = q.t === "tf" ? [[true, "👍 Wahr"], [false, "👎 Falsch"]] : shuffle(q.o.map((t, i) => [i, t]));
+      const box = h("div", { class: "opts" + (q.t === "tf" ? " tf" : "") });
+      const btns = [];
+      choices.forEach(c => {
+        const b = h("button", { class: "opt", onclick: () => {
+          if (locked) return;
+          const ok = c[0] === q.a;
+          b.classList.add(ok ? "right" : "wrong");
+          if (!ok) btns.forEach(x => { if (x.v === q.a) x.b.classList.add("right"); });
+          finish(ok, ok ? null : (q.t === "tf" ? (q.a ? "Wahr" : "Falsch") : q.o[q.a]));
+        } }, c[1]);
+        btns.push({ v: c[0], b: b });
+        box.append(b);
+      });
+      body.append(box);
+    } else if (q.t === "order") {
+      let items = shuffle(q.o);
+      let guard = 0;
+      while (items.join("|") === q.o.join("|") && guard++ < 10) items = shuffle(q.o);
+      const answer = h("div", { class: "answer" }), pool = h("div", { class: "pool" });
+      const chosen = [];
+      const checkBtn = h("button", { class: "btn wide zone", disabled: true, onclick: () => {
+        const ok = chosen.join("|") === q.o.join("|");
+        Array.from(answer.children).forEach((c, i) => c.classList.add(chosen[i] === q.o[i] ? "right" : "wrong"));
+        finish(ok, ok ? null : q.o.map((t, i) => (i + 1) + ". " + t).join("  →  "));
+      } }, "Prüfen");
+      function draw() {
+        answer.innerHTML = ""; pool.innerHTML = "";
+        chosen.forEach((t, i) => answer.append(h("button", { class: "chip", onclick: () => { if (locked) return; chosen.splice(i, 1); draw(); } }, t)));
+        items.filter(t => !chosen.includes(t)).forEach(t => pool.append(h("button", { class: "chip", onclick: () => { if (locked) return; chosen.push(t); draw(); } }, t)));
+        checkBtn.disabled = chosen.length !== q.o.length;
+      }
+      draw();
+      body.append(answer, pool);
+      checkRow.append(checkBtn);
+    } else if (q.t === "match") {
+      const rights = shuffle(q.p.map(p => p[1]));
+      const sels = [];
+      const checkBtn = h("button", { class: "btn wide zone", disabled: true, onclick: () => {
+        let ok = true;
+        sels.forEach((s, i) => { const r = s.value === q.p[i][1]; s.classList.add(r ? "right" : "wrong"); s.disabled = true; if (!r) ok = false; });
+        finish(ok, ok ? null : q.p.map(p => p[0] + " → " + p[1]).join(" · "));
+      } }, "Prüfen");
+      q.p.forEach(p => {
+        const s = h("select", { onchange: () => { checkBtn.disabled = sels.some(x => !x.value); } },
+          h("option", { value: "" }, "– wählen –"), rights.map(r => h("option", { value: r }, r)));
+        sels.push(s);
+        body.append(h("div", { class: "mrow" }, h("div", { class: "ml" }, p[0]), s));
+      });
+      checkRow.append(checkBtn);
+    }
+  }
+
+  // ---------- Level ----------
+  let RUN = null;
+  function viewLevel(app, id) {
+    const l = LEVEL_BY_ID[id];
+    if (!l) return go("map");
+    document.documentElement.style.setProperty("--zc", l.zone.color);
+    if (!RUN || RUN.level.id !== id) RUN = { level: l, step: "lesson", qi: 0, hearts: 3, correct: 0, gained: 0, practiceXP: 0 };
+    const head = h("div", { class: "lvlhead" },
+      h("button", { class: "xbtn", title: "Zur Karte", onclick: () => { RUN = null; go("map", true); } }, "✕"),
+      h("div", { class: "steps" }, ["lesson", "quiz", "practice", "result"].map((s, i) => h("i", { class: i <= ["lesson", "quiz", "practice", "result"].indexOf(RUN.step === "fail" ? "quiz" : RUN.step) ? "on" : "" }))),
+      RUN.step === "quiz" ? h("div", { class: "hearts" }, [0, 1, 2].map(i => h("span", { class: i < RUN.hearts ? "" : "lost" }, "❤️"))) : null);
+    app.append(head);
+    const card = h("div", { class: "card" });
+    app.append(card);
+    ({ lesson: stepLesson, quiz: stepQuiz, practice: stepPractice, result: stepResult, fail: stepFail })[RUN.step](card, l);
+  }
+  function setStep(step) { RUN.step = step; go("level", RUN.level.id); }
+
+  function stepLesson(card, l) {
+    card.append(
+      h("div", { class: "qtype" }, l.zone.icon + " " + l.zone.title + " · Level " + (l.li + 1) + "/" + l.zone.levels.length),
+      h("h1", null, l.icon + " " + l.title),
+      h("div", { class: "lesson", html: l.lesson }),
+      h("div", { class: "keys" }, h("b", null, "📌 Das Wichtigste"), h("ul", null, l.keys.map(k => h("li", null, k)))),
+      h("div", { class: "sticky-foot" }, h("button", { class: "btn wide zone", onclick: () => { RUN.qi = 0; RUN.hearts = 3; RUN.correct = 0; setStep("quiz"); } }, "Verstanden, zum Quiz →")));
+  }
+
+  function stepQuiz(card, l) {
+    const qid = l.id + "#" + RUN.qi;
+    const q = l.quiz[RUN.qi];
+    renderQuestion(q, card, { label: "Frage " + (RUN.qi + 1) + "/" + l.quiz.length, wrongNote: "· −1 ❤️" }, ok => {
+      if (ok) { RUN.correct++; delete S.wrong[qid]; }
+      else { RUN.hearts--; S.wrong[qid] = dateKey(); }
+      save();
+      if (RUN.hearts <= 0) return setStep("fail");
+      RUN.qi++;
+      if (RUN.qi >= l.quiz.length) { completeLevel(); return setStep("practice"); }
+      setStep("quiz");
+    });
+  }
+
+  function completeLevel() {
+    const l = RUN.level, prev = S.done[l.id], stars = RUN.hearts, perfect = RUN.hearts === 3;
+    const parts = [];
+    if (!prev) {
+      parts.push(["Richtige Antworten (" + RUN.correct + " × " + XP.correct + ")", RUN.correct * XP.correct]);
+      parts.push(["Level abgeschlossen", XP.level]);
+      if (perfect) parts.push(["Perfekt, ohne Fehler!", XP.perfect]);
+      S.done[l.id] = { stars: stars, perfect: perfect, date: dateKey() };
+    } else {
+      parts.push(["Wiederholung (" + RUN.correct + " × " + XP.replay + ")", RUN.correct * XP.replay]);
+      if (perfect && !prev.perfect) parts.push(["Jetzt perfekt!", XP.perfect]);
+      prev.stars = Math.max(prev.stars, stars); prev.perfect = prev.perfect || perfect;
+    }
+    RUN.parts = parts; RUN.firstTime = !prev;
+    const sum = parts.reduce((a, p) => a + p[1], 0);
+    addXP(sum);
+    checkBadges();
+  }
+
+  function stepPractice(card, l) {
+    const p = l.practice;
+    const ta = h("textarea", { placeholder: "Deine Lösung … (wird nur in diesem Browser gespeichert)", oninput: e => { S.notes[l.id] = e.target.value; save(); } });
+    ta.value = S.notes[l.id] || "";
+    const hint = h("div", { class: "hint hidden" }, "💡 Tipp: " + p.hint);
+    const sol = h("div", { class: "solution hidden" }, h("b", null, "Musterlösung"), h("br"), p.solution);
+    const already = !!S.practice[l.id];
+    const doneBtn = h("button", { class: "btn wide good hidden", onclick: () => {
+      if (!S.practice[l.id]) { S.practice[l.id] = dateKey(); RUN.practiceXP = XP.practice; addXP(XP.practice); checkBadges(); }
+      setStep("result");
+    } }, already ? "Weiter →" : "✓ Erledigt (+" + XP.practice + " XP)");
+    const showBtn = h("button", { class: "btn wide zone", onclick: () => { sol.classList.remove("hidden"); doneBtn.classList.remove("hidden"); showBtn.classList.add("hidden"); sol.scrollIntoView({ block: "nearest", behavior: "smooth" }); } }, "Musterlösung zeigen");
+    card.append(
+      h("div", { class: "qtype" }, "🛠️ Praxisaufgabe"),
+      h("h2", null, p.task),
+      ta,
+      h("div", { class: "row", style: "margin-top:10px" }, h("button", { class: "btn ghost", onclick: () => hint.classList.toggle("hidden") }, "💡 Tipp")),
+      hint, sol,
+      h("div", { class: "sticky-foot" }, showBtn, doneBtn,
+        h("button", { class: "btn ghost wide", style: "margin-top:10px", onclick: () => setStep("result") }, "Überspringen")));
+  }
+
+  function stepResult(card, l) {
+    const parts = (RUN.parts || []).slice();
+    if (RUN.practiceXP) parts.push(["Praxisaufgabe", RUN.practiceXP]);
+    const sum = parts.reduce((a, p) => a + p[1], 0);
+    const stars = RUN.hearts;
+    if (RUN.firstTime) confetti();
+    const nl = LEVELS[l.idx + 1];
+    const zoneDone = l.zone.levels.every(x => S.done[x.id]) && l.li === l.zone.levels.length - 1;
+    card.classList.add("result");
+    card.append(
+      h("div", { class: "big" }, zoneDone ? l.zone.badge.icon : "🎉"),
+      h("h1", null, zoneDone ? "Zone geschafft: " + l.zone.title + "!" : "Level geschafft!"),
+      h("div", { class: "bigstars" }, "⭐".repeat(stars) + "☆".repeat(3 - stars)),
+      h("div", { class: "muted" }, RUN.correct + " von " + l.quiz.length + " richtig"),
+      h("div", { class: "xplist" }, parts.map(p => h("div", null, h("span", null, p[0]), h("span", null, "+" + p[1]))), h("div", null, h("span", null, "Gesamt"), h("span", null, "+" + sum + " XP"))),
+      h("div", { class: "sticky-foot" },
+        nl ? h("button", { class: "btn wide zone", onclick: () => { RUN = null; go("level", nl.id); } }, "Nächstes Level: " + nl.title + " →")
+           : h("button", { class: "btn wide", onclick: () => { RUN = null; go("boss"); } }, "🐉 Zum Endboss"),
+        h("button", { class: "btn ghost wide", style: "margin-top:10px", onclick: () => { RUN = null; go("map", true); } }, "Zur Karte")));
+  }
+
+  function stepFail(card, l) {
+    card.classList.add("result");
+    card.append(
+      h("div", { class: "big" }, "💔"),
+      h("h1", null, "Keine Herzen mehr"),
+      h("p", { class: "muted" }, "Kein Problem, das gehört zum Lernen. Die falschen Fragen liegen jetzt im Wiederholungs-Modus. Lies die Lerneinheit noch einmal und versuch es erneut."),
+      h("div", { class: "sticky-foot" },
+        h("button", { class: "btn wide zone", onclick: () => setStep("lesson") }, "📖 Lerneinheit nochmal lesen"),
+        h("button", { class: "btn ghost wide", style: "margin-top:10px", onclick: () => { RUN.qi = 0; RUN.hearts = 3; RUN.correct = 0; setStep("quiz"); } }, "🔄 Quiz direkt neu starten")));
+  }
+
+  // ---------- Wiederholen ----------
+  let REV = null;
+  function viewReview(app) {
+    const ids = Object.keys(S.wrong).filter(q => QUESTIONS[q]);
+    if (!REV) {
+      if (!ids.length) {
+        app.append(h("div", { class: "card result" }, h("div", { class: "big" }, "🧹"), h("h1", null, "Nichts zu wiederholen"),
+          h("p", { class: "muted" }, "Alle Fragen, die du falsch beantwortest, landen hier. Beantwortest du sie richtig, verschwinden sie wieder. Pro ausgebügeltem Fehler gibt es " + XP.review + " XP."),
+          h("button", { class: "btn", onclick: () => go("map", true) }, "Zur Karte")));
+        return;
+      }
+      app.append(h("div", { class: "card result" }, h("div", { class: "big" }, "🔁"), h("h1", null, "Wiederholungs-Modus"),
+        h("p", null, "Du hast ", h("b", null, ids.length + " Frage" + (ids.length === 1 ? "" : "n")), " zum Wiederholen."),
+        h("p", { class: "muted" }, "Keine Herzen, kein Druck. Jede richtige Antwort entfernt die Frage aus der Liste (+" + XP.review + " XP)."),
+        h("button", { class: "btn wide", onclick: () => { REV = { list: shuffle(ids).slice(0, 15), i: 0, ok: 0 }; go("review"); } }, "Los geht's (" + Math.min(15, ids.length) + " Fragen)")));
+      return;
+    }
+    if (REV.i >= REV.list.length) {
+      const r = REV; REV = null;
+      app.append(h("div", { class: "card result" }, h("div", { class: "big" }, r.ok === r.list.length ? "🏅" : "💪"),
+        h("h1", null, r.ok + " von " + r.list.length + " richtig"),
+        h("p", { class: "muted" }, wrongCount() ? "Noch " + wrongCount() + " Fragen offen." : "Alle Fehler ausgebügelt!"),
+        h("div", { class: "row", style: "justify-content:center" },
+          wrongCount() ? h("button", { class: "btn", onclick: () => go("review") }, "Weiter wiederholen") : null,
+          h("button", { class: "btn ghost", onclick: () => go("map", true) }, "Zur Karte"))));
+      return;
+    }
+    const item = QUESTIONS[REV.list[REV.i]];
+    document.documentElement.style.setProperty("--zc", item.level.zone.color);
+    const card = h("div", { class: "card" });
+    app.append(h("div", { class: "lvlhead" }, h("button", { class: "xbtn", onclick: () => { REV = null; go("review"); } }, "✕"),
+      h("div", { class: "steps" }, REV.list.map((_, i) => h("i", { class: i < REV.i ? "on" : "" })))), card);
+    renderQuestion(item.q, card, { label: item.level.zone.icon + " " + item.level.title }, ok => {
+      if (ok) { delete S.wrong[item.qid]; S.reviewFixed++; REV.ok++; addXP(XP.review); checkBadges(); }
+      save(); REV.i++; go("review");
+    });
+  }
+
+  // ---------- Endboss ----------
+  let BOSS = null;
+  function pickBoss() {
+    const byZone = {};
+    Object.values(QUESTIONS).forEach(x => { if (x.level.zone.id === "z0") return; (byZone[x.level.zone.id] = byZone[x.level.zone.id] || []).push(x.qid); });
+    let pick = [];
+    Object.keys(byZone).forEach(z => { pick = pick.concat(shuffle(byZone[z]).slice(0, 2)); });
+    const rest = shuffle(Object.values(byZone).flat().filter(q => !pick.includes(q)));
+    pick = pick.concat(rest.slice(0, BOSS_COUNT - pick.length));
+    return shuffle(pick);
+  }
+  function viewBoss(app) {
+    document.documentElement.style.setProperty("--zc", "#111827");
+    if (!BOSS) {
+      const bu = bossUnlocked();
+      app.append(h("div", { class: "card result" }, h("div", { class: "big" }, bu ? "🐉" : "🔒"), h("h1", null, "Endboss: Abschlussprüfung"),
+        h("p", null, BOSS_COUNT + " zufällige Fragen aus allen Zonen. Keine Herzen, aber du brauchst ", h("b", null, BOSS_PASS + " richtige Antworten (80 %)"), " zum Bestehen."),
+        S.boss.best ? h("p", { class: "muted" }, "Dein Bestwert: " + S.boss.best + "/" + BOSS_COUNT + (S.boss.passed ? " · bestanden ✅" : "")) : null,
+        bu ? h("button", { class: "btn wide", onclick: () => { BOSS = { list: pickBoss(), i: 0, ok: 0, wrong: [] }; go("boss"); } }, S.boss.passed ? "Nochmal antreten" : "⚔️ Kampf beginnen")
+           : h("p", { class: "muted" }, "Schließe zuerst alle " + LEVELS.length + " Levels ab (" + doneCount() + " geschafft). Oder aktiviere unter „Erfolge“ den freien Modus."),
+        S.boss.passed ? h("button", { class: "btn ghost wide", style: "margin-top:10px", onclick: () => go("cert") }, "📜 Urkunde ansehen") : null));
+      return;
+    }
+    if (BOSS.i >= BOSS.list.length) {
+      const b = BOSS; BOSS = null;
+      const passed = b.ok >= BOSS_PASS, first = passed && !S.boss.passed;
+      S.boss.best = Math.max(S.boss.best, b.ok);
+      if (passed) { S.boss.passed = true; S.boss.date = S.boss.date || dateKey(); }
+      save();
+      if (first) addXP(XP.boss);
+      checkBadges();
+      if (passed) confetti();
+      app.append(h("div", { class: "card result" }, h("div", { class: "big" }, passed ? "🏆" : "🛡️"),
+        h("h1", null, passed ? "Endboss besiegt!" : "Knapp daneben"),
+        h("div", { class: "bigstars" }, b.ok + " / " + b.list.length),
+        h("p", { class: "muted" }, passed ? (first ? "+" + XP.boss + " XP. Deine Urkunde ist freigeschaltet!" : "Stark, du hast es wieder geschafft.") : "Du brauchst " + BOSS_PASS + " richtige. Deine Fehler liegen im Wiederholungs-Modus. Übe sie und tritt erneut an."),
+        h("div", { class: "row", style: "justify-content:center" },
+          passed ? h("button", { class: "btn", onclick: () => go("cert") }, "📜 Zur Urkunde") : h("button", { class: "btn", onclick: () => go("review") }, "🔁 Fehler wiederholen"),
+          h("button", { class: "btn ghost", onclick: () => go("map", true) }, "Zur Karte"))));
+      return;
+    }
+    const item = QUESTIONS[BOSS.list[BOSS.i]];
+    const card = h("div", { class: "card" });
+    app.append(h("div", { class: "lvlhead" }, h("button", { class: "xbtn", onclick: () => { if (confirm("Prüfung abbrechen? Der Fortschritt dieses Versuchs geht verloren.")) { BOSS = null; go("boss"); } } }, "✕"),
+      h("div", { class: "steps" }, BOSS.list.map((_, i) => h("i", { class: i < BOSS.i ? "on" : "" }))),
+      h("div", { class: "pill" }, "✅ " + BOSS.ok)), card);
+    renderQuestion(item.q, card, { label: "🐉 Frage " + (BOSS.i + 1) + "/" + BOSS.list.length }, ok => {
+      if (ok) BOSS.ok++; else S.wrong[item.qid] = dateKey();
+      save(); BOSS.i++; go("boss");
+    });
+  }
+
+  // ---------- Erfolge / Profil ----------
+  function viewProfile(app) {
+    const ri = rankIndex(S.xp);
+    app.append(h("h1", null, "🏆 Deine Erfolge"),
+      h("div", { class: "grid" },
+        stat(fmt(S.xp), "XP gesamt"), stat(doneCount() + "/" + LEVELS.length, "Levels"),
+        stat(perfectCount(), "Perfekte Levels"), stat(Object.keys(S.practice).length, "Praxisaufgaben"),
+        stat("🔥 " + currentStreak(), "Aktuelle Streak"), stat(S.streak.best, "Längste Streak")));
+    const ab = allBadges();
+    app.append(h("div", { class: "section" }, h("h2", null, "Badges (" + ab.filter(b => S.badges[b.id]).length + "/" + ab.length + ")"),
+      h("div", { class: "grid" }, ab.map(b => h("div", { class: "badge" + (S.badges[b.id] ? "" : " locked") },
+        h("div", { class: "bi" }, b.i), h("b", null, b.n), h("small", null, b.d))))));
+    app.append(h("div", { class: "section card" }, h("h2", null, "Ränge"),
+      h("ul", { class: "ranks" }, RANKS.map((r, i) => h("li", { class: i === ri ? "cur" : (i > ri ? "future" : "") },
+        h("span", { class: "ri" }, r.i), r.n + (i === ri ? " (du)" : ""), h("small", null, fmt(r.xp) + " XP"))))));
+    const free = h("input", { type: "checkbox", onchange: e => { S.free = e.target.checked; save(); toast(S.free ? "🔓 Freier Modus an" : "🔒 Freier Modus aus"); } });
+    free.checked = S.free;
+    const file = h("input", { type: "file", accept: "application/json", class: "hidden", onchange: e => {
+      const f = e.target.files[0]; if (!f) return;
+      f.text().then(t => { try { const d = JSON.parse(t); if (typeof d.xp !== "number" || !d.done) throw 0; S = Object.assign(defaults(), d); save(); toast("✅ Fortschritt importiert"); go("profile"); } catch (err) { toast("⚠️ Datei konnte nicht gelesen werden"); } });
+    } });
+    app.append(h("div", { class: "section card" }, h("h2", null, "⚙️ Einstellungen"),
+      h("label", { class: "toggle" }, free, h("span", null, h("b", null, "Freier Modus"), h("br"), h("span", { class: "muted" }, "Alle Levels und den Endboss sofort freischalten, z. B. um gezielt ein Thema nachzuschlagen."))),
+      h("p", { class: "muted" }, "Dein Fortschritt wird nur in diesem Browser gespeichert. Mit Export und Import nimmst du ihn auf ein anderes Gerät mit."),
+      h("div", { class: "row" },
+        h("button", { class: "btn ghost", onclick: exportState }, "⬇️ Exportieren"),
+        h("button", { class: "btn ghost", onclick: () => file.click() }, "⬆️ Importieren"), file,
+        S.boss.passed ? h("button", { class: "btn ghost", onclick: () => go("cert") }, "📜 Urkunde") : null,
+        h("button", { class: "btn ghost", style: "color:var(--bad)", onclick: () => { if (confirm("Wirklich den gesamten Fortschritt löschen?")) { S = defaults(); save(); RUN = REV = BOSS = null; go("map"); } } }, "🗑️ Zurücksetzen"))),
+      h("p", { class: "muted", style: "font-size:13px;margin-top:22px" }, "Diese App orientiert sich am Aufbau der Kurse „KI-Manager“ und „Claude Code Masterclass“ von kilernen.de (Everlast KI Academy). Alle Texte und Aufgaben sind eigenständig formuliert. Sie bereitet dich auf die Kurse vor, ersetzt aber weder die Kurse noch deren offizielle Zertifizierung. Keine Rechtsberatung."));
+  }
+  function stat(v, l) { return h("div", { class: "stat" }, h("b", null, String(v)), h("span", { class: "muted" }, l)); }
+  function exportState() {
+    const blob = new Blob([JSON.stringify(S, null, 2)], { type: "application/json" });
+    const a = h("a", { href: URL.createObjectURL(blob), download: "ki-lernreise-fortschritt-" + dateKey() + ".json" });
+    document.body.append(a); a.click(); a.remove();
+  }
+
+  // ---------- Urkunde ----------
+  function viewCert(app) {
+    if (!S.boss.passed) { app.append(h("div", { class: "card result" }, h("div", { class: "big" }, "🔒"), h("h1", null, "Noch keine Urkunde"), h("p", { class: "muted" }, "Besiege zuerst den Endboss."), h("button", { class: "btn", onclick: () => go("boss") }, "🐉 Zum Endboss"))); return; }
+    const who = h("div", { class: "who" }, S.name || "Dein Name");
+    const inp = h("input", { type: "text", placeholder: "Dein Name für die Urkunde", style: "font:inherit;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);flex:1;min-width:200px",
+      oninput: e => { S.name = e.target.value; save(); who.textContent = S.name || "Dein Name"; } });
+    inp.value = S.name;
+    const d = S.boss.date ? S.boss.date.split("-").reverse().join(".") : dateKey().split("-").reverse().join(".");
+    app.append(h("div", { class: "row", style: "margin-bottom:16px" }, inp, h("button", { class: "btn", onclick: () => print() }, "🖨️ Drucken / PDF")),
+      h("div", { id: "certprint" }, h("div", { class: "cert" },
+        h("div", { class: "seal" }, "🏆"),
+        h("div", { style: "letter-spacing:.2em;text-transform:uppercase;font-size:13px" }, "Urkunde"),
+        h("h1", null, "KI-Lernreise"),
+        h("div", null, "Hiermit wird bestätigt, dass"),
+        who,
+        h("div", null, "alle " + LEVELS.length + " Levels und die Abschlussprüfung (" + S.boss.best + "/" + BOSS_COUNT + ") erfolgreich gemeistert hat:"),
+        h("ul", null, ZONES.filter(z => z.id !== "z0").map(z => h("li", null, z.icon + " " + z.title))),
+        h("div", null, "Erreichter Rang: ", h("b", null, RANKS[rankIndex(S.xp)].i + " " + RANKS[rankIndex(S.xp)].n), " · " + fmt(S.xp) + " XP"),
+        h("div", { class: "foot" }, h("span", null, "Datum: " + d), h("span", null, "Badges: " + Object.keys(S.badges).length)),
+        h("small", null, "Selbstlern-Urkunde zur Vorbereitung auf die Kurse „KI-Manager“ und „Claude Code Masterclass“. Kein offizielles Zertifikat."))));
+  }
+
+  // ---------- Start ----------
+  go("map", true);
+})();
+
+</script>
+</body>
+</html>
