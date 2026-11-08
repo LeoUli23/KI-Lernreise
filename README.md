@@ -31,7 +31,7 @@ XP · 8 Ränge (KI-Neuling → Agent-Meister) · Tages-Streak · 3 Herzen pro Qu
 
 ## Entwickeln
 
-Die Inhalte liegen in `src/*.js`, die Logik in `app.js` und das Layout in `template.html`.
+Die Inhalte liegen in `src/*.js` (eine Datei pro Zone), die Logik in `app.js` und das Layout in `template.html`.
 
 ```bash
 node build.js   # erzeugt dist/index.html
