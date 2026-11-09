@@ -155,7 +155,7 @@ WHERE datum BETWEEN '2026-10-01' AND '2026-10-31';</pre>
       practice: {
         task: "Entwirf eine Kurz-KI-Richtlinie (6–8 Regeln) für einen Verein, ein Ensemble oder ein Orchesterbüro. Lege fest: welche Tools erlaubt sind, welche Daten nie hinein dürfen, wer verantwortlich ist und wo man Fragen stellt.",
         hint: "Erlaubt, verboten, Daten, Prüfen der Ergebnisse, Verantwortung, Ansprechperson.",
-        solution: "1) Erlaubt: das Vereinskonto bei [Anbieter] mit AVV. Private Gratis-Konten nicht für Vereinsdaten. 2) Nie eingeben: Bankdaten, Gesundheitsdaten, Adresslisten. 3) Namen nach Möglichkeit ersetzen. 4) KI-Ergebnisse vor Veröffentlichung von einem Menschen prüfen. 5) KI-generierte Bilder und Texte nach außen als solche kennzeichnen, wo nötig. 6) Keine Entscheidungen über Personen allein durch KI. 7) Verantwortlich: Schriftführerin. 8) Fragen an ki@verein.de."
+        solution: "1) Erlaubt: das Vereinskonto bei [Anbieter] mit AVV. Private Gratis-Konten nicht für Vereinsdaten. 2) Nie eingeben: Bankdaten, Gesundheitsdaten, Adresslisten. 3) Namen nach Möglichkeit ersetzen. 4) KI-Ergebnisse vor Veröffentlichung von einem Menschen prüfen. 5) KI-generierte Bilder und Texte nach außen als solche kennzeichnen, wo nötig. 6) Keine Entscheidungen über Personen allein durch KI. 7) Verantwortlich: Schriftführerin. 8) Fragen an ki@verein.example."
       }
     },
     {

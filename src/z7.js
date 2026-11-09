@@ -584,6 +584,13 @@ Orchester, Veranstalter, Musikhochschulen.
       id: "z7l8",
       title: "Skills",
       icon: "🎓",
+      src: [
+        { t: "Anthropic Skills-Repo: Beispiel-Skills und Installationsanleitung (englisch)", u: "https://github.com/anthropics/skills" },
+        { t: "Agent Skills: der offene Standard (englisch)", u: "https://agentskills.io/specification" },
+        { t: "Der Skill „skill-creator“ zum Bauen und Testen eigener Skills (englisch)", u: "https://github.com/anthropics/skills/tree/main/skills/skill-creator" },
+        { t: "Hilfeartikel: Skills in der Claude-App nutzen (englisch)", u: "https://support.claude.com/en/articles/12512180-using-skills-in-claude" },
+        { t: "Claude Cookbooks: Skills über die API (englisch)", u: "https://github.com/anthropics/claude-cookbooks/tree/main/skills" }
+      ],
       lesson: `
 <p>Stell dir vor, du hast einmal herausgefunden, wie man einen perfekten Pressetext für dein Ensemble schreibt: welche Infos rein müssen, welcher Aufbau funktioniert, welcher Ton passt. Statt das jedes Mal neu zu erklären, schreibst du es einmal als <b>Skill</b> auf.</p>
 
@@ -654,13 +661,59 @@ description: Schreibt Pressetexte für Konzerte des
 <li>Bewerbungsunterlagen für Orchesterstellen</li>
 <li>Transkription und Untertitel nach festen Regeln</li>
 </ul>
-<div class="tip">Sicherheit: Skills können Skripte enthalten, die ausgeführt werden. Installiere Skills von anderen nur aus vertrauenswürdigen Quellen und lies sie vorher.</div>`,
+
+<h4>Teil 6: Skills sind ein offener Standard</h4>
+<p>Anthropic hat das Skill-Format als offenen Standard veröffentlicht: <b>Agent Skills</b> (agentskills.io). Ein Skill, der sich daran hält, funktioniert in der Claude-App, in Claude Code, über die API und in anderen Werkzeugen, die den Standard unterstützen. Die wichtigsten Regeln:</p>
+<table>
+<tr><th>Teil</th><th>Regel</th></tr>
+<tr><td><b>name</b> (Pflicht)</td><td>Höchstens 64 Zeichen, nur Kleinbuchstaben, Ziffern und Bindestriche, gleich wie der Ordnername</td></tr>
+<tr><td><b>description</b> (Pflicht)</td><td>Höchstens 1.024 Zeichen, sagt was und wann</td></tr>
+<tr><td>Optionale Felder</td><td>license, compatibility, metadata, allowed-tools</td></tr>
+<tr><td><code>scripts/</code></td><td>Ausführbarer Code, z. B. ein Python-Skript, das eine Tabelle prüft</td></tr>
+<tr><td><code>references/</code></td><td>Ausführliche Nachschlage-Dokumente, nur bei Bedarf gelesen</td></tr>
+<tr><td><code>assets/</code></td><td>Vorlagen, Bilder, Daten</td></tr>
+</table>
+<p>Die progressive Offenlegung hat damit <b>drei Stufen</b>: 1. Name und Beschreibung (immer), 2. der Text der SKILL.md (wenn der Skill passt), 3. weitere Dateien (nur wenn sie gebraucht werden). Halte die SKILL.md deshalb eher kurz (Richtwert: unter 500 Zeilen) und lagere Details nach <code>references/</code> aus.</p>
+<pre>programmheft/
+├── SKILL.md
+├── references/
+│   └── stilregeln.md
+├── assets/
+│   └── vorlage.md
+└── scripts/
+    └── zeichen_zaehlen.py</pre>
+
+<h4>Teil 7: Fertige Skills von Anthropic</h4>
+<p>Im Repository <b>github.com/anthropics/skills</b> liegen Beispiel-Skills in vier Bereichen:</p>
+<ul>
+<li><b>Kreativ und Design:</b> z. B. algorithmic-art, canvas-design, theme-factory, slack-gif-creator</li>
+<li><b>Entwicklung und Technik:</b> z. B. mcp-builder, webapp-testing, frontend-design, claude-api</li>
+<li><b>Firma und Kommunikation:</b> z. B. brand-guidelines, internal-comms, doc-coauthoring</li>
+<li><b>Dokumente:</b> docx, pdf, pptx, xlsx. Das sind die Skills, mit denen Claude selbst Word-, PDF-, PowerPoint- und Excel-Dateien erstellt. Lehrreich, um komplexe Skills zu verstehen.</li>
+</ul>
+<p>In Claude Code installierst du sie als Plugin:</p>
+<pre>/plugin marketplace add anthropics/skills
+/plugin install document-skills@anthropic-agent-skills
+/plugin install example-skills@anthropic-agent-skills</pre>
+<p>Danach reicht ein Satz wie „Nutze den PDF-Skill, um die Formularfelder aus anmeldung.pdf auszulesen.“ In der Claude-App sind die Beispiel-Skills in den bezahlten Plänen schon enthalten, eigene Skills kannst du dort hochladen (siehe Hilfeartikel in den Quellen).</p>
+<div class="ex"><b>Der Skill claude-api:</b> Er kennt aktuelle Modellnamen, Parameter und Änderungen der Claude-API. Installiert mit <code>/plugin install claude-api@anthropic-agent-skills</code>, hilft er beim Programmieren mit der API. Mit <code>/claude-api migrate</code> stellt er alten Code auf ein neueres Modell um, z. B. Kurs-Notebooks mit alten Modellnamen, Prefill oder temperature.</div>
+
+<h4>Teil 8: Skills testen mit skill-creator</h4>
+<p>Der Skill <b>skill-creator</b> aus dem Repo hilft dir, neue Skills zu bauen, bestehende zu verbessern und sie zu <b>testen</b>. Getestet werden zwei Dinge (wie im Level „Prompts testen: Evals“):</p>
+<ol>
+<li><b>Auslösung:</b> Springt der Skill bei passenden Anfragen an und bei unpassenden nicht? Sonst muss die description genauer werden.</li>
+<li><b>Ergebnis:</b> Sind die Ergebnisse mit Skill besser als ohne? Dazu vergleicht man Testfälle mit und ohne Skill.</li>
+</ol>
+<div class="tip">Sicherheit: Skills können Skripte enthalten, die ausgeführt werden. Installiere Skills von anderen nur aus vertrauenswürdigen Quellen und lies sie vorher. Auch Anthropic schreibt zum eigenen Repo: Die Skills dienen der Demonstration, teste sie selbst, bevor du dich bei wichtigen Aufgaben darauf verlässt.</div>`,
       keys: [
         "Skill = Ordner mit SKILL.md (+ Vorlagen, Beispiele, Skripte)",
         "Frontmatter: name + description (was und wann)",
-        "Progressive Offenlegung: nur bei Bedarf geladen",
+        "Progressive Offenlegung in drei Stufen: Beschreibung → SKILL.md → weitere Dateien",
         "CLAUDE.md immer, Skill bei Bedarf",
-        "Reverse Engineering: Vorbild → analysieren → Anleitung → testen → verbessern"
+        "Reverse Engineering: Vorbild → analysieren → Anleitung → testen → verbessern",
+        "Offener Standard Agent Skills: name max. 64 Zeichen, Ordner scripts/, references/, assets/",
+        "Anthropic-Skills per /plugin install; claude-api-Skill mit migrate für alten Code",
+        "skill-creator testet Auslösung und Ergebnis"
       ],
       quiz: [
         { t: "mc", q: "Woran erkennt Claude, wann ein Skill passt?", o: ["Am Dateinamen der Bilder", "An der description im Frontmatter", "An der Uhrzeit", "Gar nicht"], a: 1, e: "Darum muss die Beschreibung klar sagen, wann der Skill gebraucht wird." },
@@ -669,12 +722,47 @@ description: Schreibt Pressetexte für Konzerte des
         { t: "order", q: "Reverse-Engineering-Technik: Bringe die Schritte in die richtige Reihenfolge.", o: ["Gelungenes Beispiel auswählen", "Claude analysieren lassen, was es gut macht", "Erkenntnisse als Anleitung in SKILL.md schreiben", "An einem neuen Fall testen", "Anleitung verbessern"], e: "Vom Vorbild zur wiederholbaren Anleitung." },
         { t: "mc", q: "Welche description ist am besten?", o: ["„Text-Skill“", "„Schreibt Pressetexte für Konzerte. Nutzen, wenn ein Pressetext oder eine Konzertankündigung gebraucht wird.“", "„Wichtig!“", "„Skill Nummer 3“"], a: 1, e: "Sie sagt was und wann." },
         { t: "match", q: "CLAUDE.md oder Skill?", p: [["„Texte immer auf Deutsch“", "CLAUDE.md (gilt immer)"], ["Anleitung für Pressetexte in 5 Schritten", "Skill (bei Bedarf)"], ["Wie man das Projekt startet", "CLAUDE.md (Projektwissen)"], ["Vorgehen für Probenpläne mit Vorlage", "Skill (eigene Aufgabe)"]], e: "Immer gültig → CLAUDE.md; bestimmte Aufgabe → Skill." },
+        { t: "match", q: "Welcher Ordner eines Skills ist gemeint?", p: [["Python-Skript, das Zeichen zählt", "scripts/"], ["Ausführliche Stilregeln zum Nachschlagen", "references/"], ["Mustervorlage für das Programmheft", "assets/"], ["Name, Beschreibung und Anleitung", "SKILL.md"]], e: "So bleibt die SKILL.md kurz, Details werden nur bei Bedarf geladen." },
+        { t: "mc", q: "Welcher name ist nach dem offenen Agent-Skills-Standard gültig?", o: ["„Pressetext Ensemble!“", "„pressetext-ensemble“", "„PRESSETEXT_ENSEMBLE“", "„pressetext ensemble 2026 für alle Konzerte und Anlässe“"], a: 1, e: "Nur Kleinbuchstaben, Ziffern und Bindestriche, höchstens 64 Zeichen, gleich wie der Ordnername." },
+        { t: "mc", q: "Wofür ist der Skill skill-creator aus Anthropics Repo gedacht?", o: ["Er erstellt Bilder", "Er hilft, Skills zu bauen, zu verbessern und zu testen", "Er löscht alte Skills", "Er übersetzt Skills ins Englische"], a: 1, e: "Er prüft auch, ob ein Skill zuverlässig auslöst." },
         { t: "tf", q: "Skills von fremden Quellen sollte man vor der Installation lesen, weil sie Skripte enthalten können.", a: true, e: "Wie bei jeder Software: Herkunft prüfen." }
       ],
       practice: {
-        task: "Schreibe eine vollständige SKILL.md für eine Aufgabe, die du regelmäßig erledigst: Frontmatter (name + description mit „wann“), Abschnitt Vorgehen (mind. 4 Schritte), Abschnitt Regeln (mind. 3) und einen Hinweis auf eine Vorlage oder Beispiele.",
-        hint: "Probenplan, Programmhefttext, Unterrichtsplanung, Instagram-Post, Angebot …",
-        solution: "---\nname: probenplan\ndescription: Erstellt aus Konzertprogramm und Probenterminen einen Probenplan als Tabelle. Nutzen, wenn ein Probenplan oder eine Probenübersicht gebraucht wird.\n---\n\n# Probenplan erstellen\n\n## Vorgehen\n1. Programm (Stücke, Dauer, Schwierigkeit 1–5) und Termine erfassen; fehlt etwas, nachfragen.\n2. Schwierige Stücke in die ersten Proben, wenn alle frisch sind.\n3. Pro Probe max. 2,5 Std. inkl. 15 Min. Pause.\n4. Generalprobe: Durchlauf in Konzertreihenfolge.\n5. Tabelle: Datum, Uhrzeit, Stücke, Schwerpunkt, wer frei hat.\n\n## Regeln\n- Pausen immer einplanen\n- Bei Solisten: Probe mit Solist nicht vor der vorletzten Probe\n- Format wie in vorlage.md"
+        type: "werkstatt",
+        task: "Schreibe eine vollständige SKILL.md nach dem offenen Standard für eine Aufgabe, die du regelmäßig erledigst: Frontmatter mit gültigem name und einer description (was und wann), Abschnitt Vorgehen (mind. 4 nummerierte Schritte), Abschnitt Regeln (mind. 3), Verweis auf eine Datei in references/ oder assets/ und ein Hinweis, wie du den Skill testest.",
+        hint: "Probenplan, Programmhefttext, Unterrichtsplanung, Instagram-Post, Angebot … Für den Test: zwei Anfragen, bei denen der Skill anspringen soll, und eine, bei der er es nicht soll.",
+        checklist: [
+          { t: "Frontmatter mit name und description", re: "---[^]*name:[^]*description:[^]*---" },
+          { t: "name nur mit Kleinbuchstaben, Ziffern, Bindestrichen", re: "name: *[a-z0-9]+(-[a-z0-9]+)*[ ]*(?=[^ _a-zäöü0-9!?.,;:-]|$)" },
+          { t: "description sagt, wann der Skill genutzt wird", re: "description:[^]*(nutzen|verwenden|wenn |sobald)" },
+          { t: "Mindestens 4 nummerierte Schritte", re: "1[.)][^]*2[.)][^]*3[.)][^]*4[.)]" },
+          { t: "Abschnitt Regeln", re: "#+ *regeln" },
+          { t: "Verweis auf references/, assets/ oder scripts/", re: "(references/|assets/|scripts/)" },
+          { t: "Testfälle oder Testhinweis", re: "test" }
+        ],
+        solution: `---
+name: programmheft-text
+description: Schreibt Werkeinführungen für Programmhefte von Kammermusik- und Ensemblekonzerten. Nutzen, wenn ein Programmhefttext, eine Werkeinführung oder ein Konzertprogramm mit Erläuterungen gebraucht wird.
+---
+
+# Programmhefttext schreiben
+
+## Vorgehen
+1. Werk, Komponist, Entstehungsjahr und Besetzung erfassen. Fehlt etwas: nachfragen.
+2. Einen Einstieg mit Bezug zum Publikum finden (Anekdote, Hörtipp, Zeitbezug).
+3. Aufbau: Einstieg, Entstehung, was man hören kann (2–3 Hörtipps), kurzer Schluss.
+4. Länge: 1.200–1.800 Zeichen pro Werk.
+5. Stil nach references/stilregeln.md, Form nach assets/vorlage.md.
+
+## Regeln
+- Fakten (Jahreszahlen, Widmungen) nur mit Quelle; im Zweifel weglassen.
+- Keine Fachbegriffe ohne kurze Erklärung.
+- Namen der Mitwirkenden immer mit Instrument.
+
+## Test
+- Soll anspringen: „Schreib die Werkeinführung zu Ravels Bolero fürs Programmheft.“
+- Soll anspringen: „Wir brauchen Programmtexte für das Herbstkonzert.“
+- Soll nicht anspringen: „Schreib eine Rechnung für das Herbstkonzert.“`
       }
     },
     {
@@ -1005,6 +1093,126 @@ Problem und Vorschlag zurück.</pre>
         task: "Formuliere einen Auftrag an Claude Code, der eine Änderung auf einem neuen Branch macht, in kleinen Commits sichert und als Pull Request vorschlägt. Beschreibe dann einen eigenen Slash-Command, den du dir anlegen würdest (Name, was er fragt, was er tut).",
         hint: "Was ändern + Branch + kleine Commits + PR mit Zusammenfassung. Command: Welche Aufgabe wiederholt sich bei dir?",
         solution: "Auftrag: „Ergänze auf der Startseite einen Abschnitt ‚Aktuelle Projekte‘ mit meinem Ensemble. Arbeite auf einem neuen Branch ‚aktuelle-projekte‘, committe in kleinen Schritten mit klaren Nachrichten und erstelle einen Pull Request mit kurzer Zusammenfassung, damit ich vor dem Übernehmen prüfen kann.“\nCommand /neues-konzert: fragt nach Datum, Ort, Programm, Besetzung und Ticketlink; trägt den Termin in termine.json ein; prüft die Terminseite; schlägt einen kurzen Social-Media-Text vor; committet mit „Termin: <Datum> <Ort>“."
+      }
+    },
+    {
+      id: "z7src",
+      title: "Lernquellen von Anthropic",
+      icon: "🏫",
+      src: [
+        { t: "Claude Academy: kostenlose Kurse mit Zertifikat (englisch)", u: "https://academy.claude.com" },
+        { t: "Anthropic Courses auf GitHub (englisch)", u: "https://github.com/anthropics/courses", lic: true },
+        { t: "Claude Cookbooks: Rezepte und Code-Beispiele (englisch)", u: "https://github.com/anthropics/claude-cookbooks" },
+        { t: "Claude Quickstarts: fertige Starterprojekte (englisch)", u: "https://github.com/anthropics/claude-quickstarts" },
+        { t: "Claude-Dokumentation für API und Prompting", u: "https://platform.claude.com/docs" },
+        { t: "Claude-Code-Dokumentation (auch auf Deutsch)", u: "https://code.claude.com/docs/de/overview" }
+      ],
+      lesson: `
+<p>Du hast fast alles durch. Wie geht es weiter? Anthropic stellt viele Lernmaterialien kostenlos bereit. Einige davon stecken bereits in dieser App, vor allem in Zone 2 und Zone 3. Hier ist deine Landkarte für danach.</p>
+
+<h4>Teil 1: Claude Academy, Kurse mit Zertifikat</h4>
+<p>Unter <b>academy.claude.com</b> bietet Anthropic seit August 2026 die <b>Claude Academy</b> an (früher „Anthropic Academy“). Die Kurse sind kostenlos, auf Englisch und enden mit einem <b>Zertifikat</b>, das du z. B. in deinen Lebenslauf oder dein LinkedIn-Profil aufnehmen kannst. Darunter:</p>
+<table>
+<tr><th>Kurs</th><th>Worum es geht</th><th>Passt zu Zone</th></tr>
+<tr><td>AI Fluency</td><td>Grundhaltung und Kompetenzen für die Arbeit mit KI</td><td>0, 1</td></tr>
+<tr><td>Claude 101</td><td>Die Claude-App im Alltag</td><td>1, 3</td></tr>
+<tr><td>Claude Code 101 und Claude Code in Action</td><td>Einstieg und Praxis mit Claude Code</td><td>7</td></tr>
+<tr><td>Introduction to Agent Skills</td><td>Skills bauen und nutzen</td><td>7</td></tr>
+<tr><td>Introduction to MCP</td><td>Das Model Context Protocol</td><td>6, 7</td></tr>
+<tr><td>Building with the Claude API</td><td>Programmieren mit der API</td><td>2</td></tr>
+</table>
+<p>Daneben gibt es einen Kurs zu Subagents sowie Bereiche für die Claude-App, Claude Code, AI Fluency und die Entwicklerplattform. Englisch ist kein Hindernis: Die Übersetzungsfunktion deines Browsers hilft, und du kannst Claude jederzeit bitten, eine Lektion auf Deutsch zu erklären.</p>
+<div class="now">Stand November 2026. Das Kursangebot wächst laufend, schau direkt auf academy.claude.com nach.</div>
+
+<h4>Teil 2: Die GitHub-Kurse (anthropics/courses)</h4>
+<p>Fünf Kurse als <b>Jupyter-Notebooks</b> (Dokumente, in denen Erklärungen und ausführbarer Python-Code abwechseln):</p>
+<ol>
+<li><b>Anthropic API Fundamentals:</b> API-Grundlagen, Parameter, Streaming, Bilder</li>
+<li><b>Prompt Engineering Interactive Tutorial:</b> neun Kapitel plus Anhang, Grundlage der Zone 3</li>
+<li><b>Real World Prompting:</b> Praxisfälle Schritt für Schritt</li>
+<li><b>Prompt Evaluations:</b> Prompts messen und testen</li>
+<li><b>Tool Use:</b> Werkzeuge für Claude bauen</li>
+</ol>
+<p><b>Mit Claude Code durcharbeiten:</b></p>
+<pre>git clone https://github.com/anthropics/courses.git
+cd courses
+claude</pre>
+<p>Dann zum Beispiel: „Richte mir eine Python-Umgebung mit Jupyter für den Kurs Real World Prompting ein. Mein API-Schlüssel kommt in eine .env-Datei. Passe die Notebooks an aktuelle Modelle an.“</p>
+<div class="now">Die Kurse stammen aus 2024 und nutzen alte Modelle wie claude-3-haiku-20240307. Diese sind teils abgeschaltet. Ersetze sie z. B. durch claude-haiku-5-5. Außerdem lehnen die neuesten Modelle Prefill ab und unterstützen temperature nicht mehr. Der Skill claude-api mit <code>/claude-api migrate</code> erledigt solche Anpassungen für dich (siehe Level „Skills“).</div>
+
+<h4>Teil 3: Claude Cookbooks, Rezepte für einzelne Aufgaben</h4>
+<p>Das Repository <b>anthropics/claude-cookbooks</b> enthält kurze, fertige Rezepte (Notebooks) für einzelne Aufgaben:</p>
+<table>
+<tr><th>Ordner</th><th>Inhalt</th></tr>
+<tr><td>capabilities</td><td>Klassifizieren, Zusammenfassen, RAG, Text zu SQL</td></tr>
+<tr><td>tool_use</td><td>Werkzeuge, z. B. Kundenservice-Agent, strukturierte Daten auslesen</td></tr>
+<tr><td>patterns/agents</td><td>Workflow-Muster: Chaining, Routing, Orchestrator, Evaluator</td></tr>
+<tr><td>multimodal</td><td>Bilder, Diagramme, PDFs verstehen</td></tr>
+<tr><td>extended_thinking</td><td>Nachdenken lassen</td></tr>
+<tr><td>skills</td><td>Skills über die API</td></tr>
+<tr><td>misc</td><td>Evals bauen, Zitate (Citations), Prompt Caching, Batch-Verarbeitung, Metaprompt</td></tr>
+</table>
+
+<h4>Teil 4: Claude Quickstarts, ganze Projekte zum Starten</h4>
+<p><b>anthropics/claude-quickstarts</b> enthält komplette Beispielprojekte, z. B. einen Kundenservice-Agenten, einen Finanzdaten-Analysten, Demos für Computer Use und Browser-Steuerung sowie einen Agenten für autonomes Programmieren. Ideal, um mit Claude Code zu fragen: „Erkläre mir, wie dieses Projekt aufgebaut ist“, und es dann für eigene Zwecke anzupassen.</p>
+
+<h4>Teil 5: Dokumentation</h4>
+<ul>
+<li><b>platform.claude.com/docs:</b> API, Modelle, Prompt-Engineering-Leitfäden</li>
+<li><b>code.claude.com/docs:</b> Claude Code, vieles auch auf Deutsch</li>
+<li><b>support.claude.com:</b> Hilfe zur Claude-App</li>
+<li><b>github.com/anthropics/skills:</b> Beispiel-Skills (siehe Level „Skills“)</li>
+</ul>
+
+<h4>Teil 6: Sicher und günstig lernen</h4>
+<ul>
+<li><b>API-Schlüssel geheim halten:</b> nur in einer .env-Datei, die per .gitignore nie auf GitHub landet.</li>
+<li><b>Ausgabenlimit</b> in der Claude Console setzen und mit dem günstigen Haiku üben. Ein Kurs-Notebook kostet meist nur Cent-Beträge.</li>
+<li><b>Fremden Code verstehen, bevor er läuft:</b> Lass Claude Code ein Repo erst erklären, bevor du Skripte ausführst.</li>
+<li><b>Lizenzen beachten:</b> Die GitHub-Kurse stehen unter CC BY-NC 4.0 (Namensnennung, keine kommerzielle Nutzung). Cookbooks und Quickstarts stehen unter der freien MIT-Lizenz, die Beispiel-Skills größtenteils unter Apache 2.0.</li>
+</ul>
+
+<h4>Teil 7: Dein Lernrhythmus</h4>
+<div class="ex">Ein realistischer Plan neben dem Beruf: <b>zweimal pro Woche 45 Minuten</b>. Einmal Theorie (eine Academy-Lektion oder ein Notebook), einmal Praxis (das Gelernte sofort auf eine eigene Aufgabe anwenden, z. B. einen Skill bauen oder eine Automation verbessern). Wiederhole außerdem regelmäßig in dieser App, besonders die Levels mit „AKTUALISIERT“-Etikett.</div>`,
+      keys: [
+        "Claude Academy (academy.claude.com): kostenlose Kurse mit Zertifikat",
+        "anthropics/courses: 5 Notebook-Kurse (API, Prompting, Praxis, Evals, Tool Use), CC BY-NC 4.0",
+        "Alte Modellnamen, Prefill und temperature beim Durcharbeiten anpassen (claude-api migrate)",
+        "Claude Cookbooks: Rezepte; Claude Quickstarts: ganze Starterprojekte",
+        "Docs: platform.claude.com/docs (API), code.claude.com/docs (Claude Code)",
+        "Sicher lernen: Schlüssel in .env, Ausgabenlimit, fremden Code erst erklären lassen"
+      ],
+      quiz: [
+        { t: "mc", q: "Wo findest du kostenlose Kurse von Anthropic, die mit einem Zertifikat enden?", o: ["In der Claude Academy (academy.claude.com)", "Nur auf kostenpflichtigen Plattformen", "Im App Store", "Es gibt keine"], a: 0, e: "Die Claude Academy gibt es seit August 2026, früher hieß sie Anthropic Academy." },
+        { t: "match", q: "Welche Lernquelle passt?", p: [["Videokurse mit Zertifikat", "Claude Academy"], ["Fünf Notebook-Kurse zu API, Prompting und Evals", "anthropics/courses"], ["Kurze Rezepte für einzelne Aufgaben", "Claude Cookbooks"], ["Komplette Beispielprojekte zum Anpassen", "Claude Quickstarts"]], e: "Je nach Ziel die passende Quelle wählen." },
+        { t: "mc", q: "Ein Kurs-Notebook nutzt claude-3-haiku-20240307 und Prefill. Was tust du?", o: ["So lassen, das funktioniert immer", "Modellnamen aktualisieren und Prefill ersetzen, z. B. mit Claude Code oder /claude-api migrate", "Das Notebook löschen", "Den Kurs abbrechen"], a: 1, e: "Alte Modelle werden abgeschaltet, neue lehnen Prefill ab." },
+        { t: "order", q: "Bringe die Schritte zum Durcharbeiten eines GitHub-Kurses mit Claude Code in eine sinnvolle Reihenfolge.", o: ["Repository klonen", "Claude Code im Kursordner starten", "Umgebung einrichten, API-Schlüssel in .env", "Notebooks an aktuelle Modelle anpassen", "Notebook Zelle für Zelle ausführen"], e: "Erst holen, dann einrichten, anpassen und loslegen." },
+        { t: "mc", q: "Wohin gehört dein API-Schlüssel beim Lernen mit den Notebooks?", o: ["Direkt in den Code, der auf GitHub geht", "In eine .env-Datei, die per .gitignore nicht hochgeladen wird", "In eine öffentliche Notiz", "In den Dateinamen"], a: 1, e: "Ein öffentlicher Schlüssel kann von Fremden auf deine Kosten benutzt werden." },
+        { t: "tf", q: "Die Inhalte der GitHub-Kurse von Anthropic darfst du frei weiterverkaufen.", a: false, e: "Sie stehen unter CC BY-NC 4.0: Namensnennung, keine kommerzielle Nutzung." },
+        { t: "tf", q: "Bevor du Skripte aus einem fremden Repository ausführst, solltest du dir den Code von Claude Code erklären lassen.", a: true, e: "Erst verstehen, dann ausführen." }
+      ],
+      practice: {
+        task: "Erstelle deinen persönlichen Lernplan für die nächsten vier Wochen: Wähle mindestens drei Quellen aus diesem Level, lege pro Woche ein Ziel und eine Praxisaufgabe fest, und plane ein Mini-Projekt für Woche 4.",
+        hint: "Zwei Termine pro Woche: einmal Theorie, einmal Praxis. Das Mini-Projekt sollte dir im Berufsalltag wirklich helfen.",
+        solution: `Woche 1 – Grundlagen festigen
+Theorie: Claude Academy „AI Fluency“ (erste Module)
+Praxis: Drei Levels dieser App mit „AKTUALISIERT“ wiederholen
+
+Woche 2 – Claude Code
+Theorie: Claude Academy „Claude Code 101“
+Praxis: anthropics/courses klonen, mit Claude Code die Umgebung einrichten, Kapitel 1–3 des Prompt-Tutorials ausführen
+
+Woche 3 – Skills
+Theorie: Claude Academy „Introduction to Agent Skills“
+Praxis: Skill „programmheft-text“ bauen und mit drei Testanfragen prüfen
+
+Woche 4 – Mini-Projekt
+Ein Python-Skript, das Veranstalter-Mails sortiert (Prompt aus Zone 3), dazu ein Eval mit 10 Testfällen. Ziel: mindestens 9 von 10 richtig.
+
+Regeln
+- Dienstag und Samstag je 45 Minuten
+- API-Ausgabenlimit 10 € pro Monat, üben mit Haiku
+- Am Monatsende: Zertifikate ins Profil, nächsten Plan schreiben`
       }
     },
     {

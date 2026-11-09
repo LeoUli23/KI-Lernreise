@@ -115,6 +115,34 @@ h2{font-size:22px;margin:.2em 0 .5em}
 .lesson th,.lesson td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
 .lesson th{background:color-mix(in srgb,var(--zc) 12%,var(--card));font-weight:800}
 .lesson td code{white-space:nowrap}
+.ntag{display:inline-block;margin-top:6px;font-size:10px;font-weight:900;letter-spacing:.06em;padding:2px 8px;border-radius:99px;background:#ef4444;color:#fff}
+.ntag.upd{background:#0ea5e9}
+.gapcard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid #f59e0b;background:color-mix(in srgb,#f59e0b 12%,var(--card));border-radius:var(--r);padding:12px 14px;margin:0 0 14px;color:var(--ink)}
+.gapcard .gi{font-size:28px}.gapcard small{color:var(--muted)}.gapcard .go{margin-left:auto;font-weight:800;color:#b45309;white-space:nowrap}
+.gaplist{display:grid;gap:10px}
+.gapitem{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--zc);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);color:var(--ink)}
+.gapitem .gi{font-size:26px}.gapitem .gt{flex:1;min-width:0}.gapitem .gt b{display:block}.gapitem .gt small{color:var(--muted)}.gapitem .ntag{margin-top:0}
+.infobanner{background:color-mix(in srgb,#0ea5e9 12%,var(--card));border-left:5px solid #0ea5e9;border-radius:12px;padding:10px 14px;margin:6px 0 14px;font-size:15px}
+.infobanner.neu{background:color-mix(in srgb,#ef4444 10%,var(--card));border-left-color:#ef4444}
+.srcbox{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:14px;background:color-mix(in srgb,var(--zc) 5%,var(--card))}
+.srcbox ul{padding-left:1.2em;margin:6px 0}.srcbox a{color:var(--accent);word-break:break-word}.srcbox small{color:var(--muted);display:block;line-height:1.4}
+pre{position:relative}
+.copybtn{position:absolute;top:6px;right:6px;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:2px 7px;font-size:14px;line-height:1.4;opacity:.85}
+.copybtn:hover{opacity:1}
+.given{margin:12px 0}
+.given pre,.codepre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:color-mix(in srgb,var(--zc) 8%,var(--card));border:1px solid var(--line);border-radius:10px;padding:12px 40px 12px 14px;overflow:auto;white-space:pre-wrap;margin:6px 0}
+.solution .codepre{background:var(--card)}
+.runhelp{margin:10px 0;border:1px solid var(--line);border-radius:12px;padding:8px 14px;background:var(--card)}
+.runhelp summary{cursor:pointer;font-weight:800}
+.runhelp p,.runhelp ol{font-size:14px}
+.checklist{margin:12px 0;border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.checkrow{display:flex;gap:10px;align-items:flex-start;padding:6px 4px;border-radius:8px}
+.checkrow input{width:20px;height:20px;margin-top:2px;flex:none}
+.checkrow.ok{background:var(--good-bg)}
+.autotag{color:var(--good);font-weight:800;font-size:11px;white-space:nowrap}
+.checkcount{margin-top:8px;font-weight:900}
+.now{border-radius:12px;padding:12px 14px;margin:14px 0;font-size:15px;background:color-mix(in srgb,#0ea5e9 10%,var(--card));border-left:5px solid #0ea5e9}
+.now::before{content:"🔄 Stand heute: ";font-weight:800}
 /* Questions */
 .qtype{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--zc)}
 .qtext{font-size:20px;margin:6px 0 16px}
@@ -178,7 +206,7 @@ textarea{width:100%;min-height:130px;font:inherit;padding:12px 14px;border-radiu
 .toggle input{width:22px;height:22px;margin-top:2px}
 /* Nav */
 nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-.navin{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.navin{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 nav button{border:0;background:transparent;padding:9px 4px 10px;font-size:12px;font-weight:700;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
 nav button span{font-size:22px}
 nav button.on{color:var(--accent)}
